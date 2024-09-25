@@ -25,3 +25,10 @@ console.log(listItems[0]) // The first li element
 
 
 
+// 2. Creating elements
+// To create a new element, you can use the document.createElement() method.
+
+const newElement = document.createElement('div');
+// Now, the issue here is that the new element is created but not added to the DOM i.e. it is not added to the main HTML. To add it to the DOM, you can use the appendChild() method.
+document.querySelector("body").appendChild(newElement);
+
