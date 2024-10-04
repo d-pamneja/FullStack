@@ -24,7 +24,7 @@ function addItem(){
     const item = document.createElement("p");
     item.setAttribute("class","toDoItem");
     item.setAttribute("id","toDo-"+ctr);
-    item.innerHTML = "Task" + ctr + " : " + text.value;
+    item.innerHTML = "Task ID " + ctr + " : " + text.value;
     item.append(updateButton);
     item.append(deleteButton);
     ctr = ctr + 1;
@@ -34,6 +34,7 @@ function addItem(){
     // Reset Value
     text.value = "";
     console.log("Item Added Successfully!");
+    return;
 }
 
 function deleteItem(index){
@@ -41,12 +42,19 @@ function deleteItem(index){
     item.parentNode.removeChild(item);
     ctr = ctr - 1;
     console.log("Item Deleted Successfully!");
+    return;
 }
 
 function updateItem(index){
     const item = document.getElementById("toDo-"+index);
     const newTask = prompt("Enter updated task");
-    if(newTask!=null){
+    if(newTask!=""){
+        const isWhiteSpaceString = newTask.replace(" ","");
+        if(isWhiteSpaceString==0){
+            alert("Kindly enter a valid task.");
+            return;
+        }
+
         // Update Button
         updateButton = document.createElement("button");
         updateButton.setAttribute("id","updateButton");
@@ -59,11 +67,15 @@ function updateItem(index){
         deleteButton.setAttribute("onclick","deleteItem("+ index + ")");
         deleteButton.innerHTML = "Delete";
 
-        item.innerHTML = "Task" + index + " : " + newTask;
+        item.innerHTML = "Task ID " + index + " : " + newTask;
         item.append(updateButton);
         item.append(deleteButton);
 
         console.log("Item Updated Successfully!");
+    }
+    else{
+        alert("Kindly enter a valid task.");
+        return;
     }
 }
 
