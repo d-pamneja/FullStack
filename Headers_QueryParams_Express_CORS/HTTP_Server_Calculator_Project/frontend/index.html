@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <link href="./style.css" rel="stylesheet" type="text/css"/>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.6/axios.min.js"></script>
+    </head>
+
+    <body>
+        <h1 id="title">Calculator</h1>
+        <div id="input">
+            <input id="input-text-num1" placeholder="Enter first number here">
+            <input id="input-text-num2" placeholder="Enter second number here">
+            <select id="operation-selector">
+                <option id="op1">add</option>
+                <option id="op2">subtract</option>
+                <option id="op3">multiply</option>
+                <option id="op4">divide</option>
+            </select>
+            <button onclick="calculate()">Calculate</button>
+        </div>
+    </body>
+
+    <script src="./script.js"></script>
+</html>
