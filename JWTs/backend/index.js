@@ -121,6 +121,7 @@ app.use(logger)
 
 app.get('/',function(req,res){
     res.status(200).send("App is live.")
+    // res.sendFile(__dirname + "/frontend/public/index.html"); // To run on the same port
 })
 
 app.get('/currentUsers',function(req,res){
@@ -154,7 +155,7 @@ app.post('/login',checkCredentials,function(req,res){
 
             const user = users.find(user => user.id === id);
 
-            if(user && user.password==password){
+            if(user && user.password===password){
                 const token = jwt.sign({ // This creates a JWT which we will give to the user
                     username : id
                 },JWT_SECRET)
@@ -163,7 +164,13 @@ app.post('/login',checkCredentials,function(req,res){
                 return res.status(200).json({message:"JWT Generated",token})
             }
             else{
-                res.status(404).json({message:`User with id : ${id} not found in database.`})
+                if(!user){
+                    res.status(404).json({message:`Incorrect User ID.`})
+                }
+                else if(user && user.password!=password){
+                    res.status(404).json({message:`Incorrect password for : ${id}.`})
+                }
+                
             }
         }
         else{

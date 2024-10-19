@@ -3,27 +3,37 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width">
-        <link href="../style.css" rel="stylesheet" type="text/css"/>
+        <link href="./style.css" rel="stylesheet" type="text/css"/>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.6/axios.min.js"></script>
     </head>
 
     <body>
         Authentication Application
 
-        <div id="login">
-            <h3>Login</h3>
-            <input id="username-login" placeholder="Username">
-            <input id="password-login" placeholder="Password">
-            <button id="login" onclick="login()">Login</button>
+        <div id="login-section">
+            <div id="login">
+                <h3>Login</h3>
+                <input id="username-login" placeholder="Username">
+                <input id="password-login" placeholder="Password">
+                <button id="login" onclick="login()">Login</button>
+            </div>
+    
+            <div id="sign-up">
+                <h3>Sign Up</h3>
+                <input id="username-sign-up" placeholder="Username">
+                <input id="password-sign-up" placeholder="Password">
+                <button id="sign-up" onclick="signUp()">Sign Up</button>
+            </div>
         </div>
-
-        <div id="sign-up">
-            <h3>Sign Up</h3>
-            <input id="username-sign-up" placeholder="Username">
-            <input id="password-sign-up" placeholder="Password">
-            <button id="sign-up" onclick="signUp()">Sign Up</button>
+        
+        <div id="about-me-section" style="display:none;">
+            <div id="about-me">
+                <p id="my-credentials"></p>
+            </div>
+            <button id="logout" onclick="logout()">Logout</button>
         </div>
+            
     </body>
 
-    <script src = "../script.js"></script>
+    <script src = "./script.js"></script>
 </html>
