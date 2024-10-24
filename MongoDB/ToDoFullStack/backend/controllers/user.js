@@ -1,8 +1,11 @@
 import { UserModel } from '../db/model.js'
+import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv'; 
 dotenv.config()
 const JWT_SECRET = process.env.JWT_SECRET
+
+
 
 // Functionalities
 export const signUp = async function(req,res){ // Will bypass checkCredentials middleware first
@@ -11,11 +14,12 @@ export const signUp = async function(req,res){ // Will bypass checkCredentials m
         const name = requestBody.name
         const id = requestBody.id
         const password = requestBody.password
+        const hashedPassword = await bcrypt.hash(password,5)
 
         await UserModel.create({
+            name : name,
             email : id,
-            password : password,
-            name : name
+            password : hashedPassword,
         })
 
         res.status(201).json({message: `New user with ${id} created successfully.`})
@@ -33,11 +37,16 @@ export const login = async function(req,res){ // Will pass checkCredentials midd
         const password = requestBody.password
 
         const response = await UserModel.findOne({
-            email : id,
-            password : password
+            email : id
         })
 
-        if(response){
+        if(!response){
+            res.status(403).json({message: "Incorrect user id."})
+            return;
+        }
+
+        const passwordMatch = await bcrypt.compare(password, response.password)
+        if(passwordMatch){
             const token = jwt.sign({ // This creates a JWT which we will give to the user
                 Id : response._id.toString()
             },JWT_SECRET)
@@ -45,7 +54,7 @@ export const login = async function(req,res){ // Will pass checkCredentials midd
             return res.status(200).json({message:"JWT Generated",token})
         }
         else{
-            res.status(403).json({message: "Incorrect credentials."})
+            res.status(403).json({message: "Incorrect password."})
         }
     }
     catch(error){

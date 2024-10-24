@@ -7,7 +7,7 @@ const JWT_SECRET = process.env.JWT_SECRET
 const signUpUserSchema = z.object({
     name : z.string(),
     id : z.string().email(),
-    password : z.string().min(5)
+    password : z.string().min(5).refine((password) => /[A-Z]/.test(password), {message: "Required atleast one uppercase character"}).refine((password) => /[a-z]/.test(password), {message: "Required atleast one lowercase character"}).refine((password) => /[0-9]/.test(password), {message: "Required atleast one number"}).refine((password) => /[!@#$%^&*]/.test(password), {message: "Required atleast one special character"})
 })
 
 const loginUserSchema = z.object({
@@ -32,7 +32,13 @@ export const checkCredentials =  function(req,res,next){
             const validationResult = signUpUserSchema.safeParse(requestBody);
 
             if (!validationResult.success) {
-                return res.status(400).json({message: "Validation error", details: validationResult.error.issues});
+                const errors = validationResult.error.issues
+                let errorsArray = errors.map(error=>{
+                    return error.message
+                })
+
+
+                return res.status(400).json({message: "Validation error(s)", details: errorsArray});
             }
             else{
                 next()
