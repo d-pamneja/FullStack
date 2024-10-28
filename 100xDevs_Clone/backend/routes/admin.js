@@ -8,12 +8,14 @@ adminRouter.use(logger)
 // Routes
 adminRouter.post("/sign-up",checkCredentials,adminSignUp)
 adminRouter.post("/login",loginCheckCredentials,adminLogin) 
-adminRouter.get("/logout",adminAuth,adminLogout) 
-adminRouter.post("/add-course",adminAuth,addCourse)
-adminRouter.put("/update-course",adminAuth,updateCourse)
-adminRouter.delete("delete-course",adminAuth,deleteCourse)
-adminRouter.get("/view-metrics",adminAuth,viewMetrics)
-adminRouter.get("/view-all-courses",adminAuth,viewAdminAllCourses)
+
+adminRouter.use(adminAuth) // For all endpoints below this, the admins needs to be authenticated
+adminRouter.get("/logout",adminLogout) 
+adminRouter.post("/add-course",addCourse)
+adminRouter.put("/update-course",updateCourse)
+adminRouter.delete("/delete-course",deleteCourse)
+adminRouter.get("/view-metrics",viewMetrics)
+adminRouter.get("/view-all-courses",viewAdminAllCourses)
 
 
 // Exporting the user Router

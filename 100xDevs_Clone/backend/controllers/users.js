@@ -1,5 +1,4 @@
-import { UserModel } from '../db/model.js'
-import { CourseModel } from '../db/model.js'
+import { UserModel,CourseModel,PurchasesModel} from '../db/model.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv'; 
@@ -13,18 +12,18 @@ export const signUp = async function(req,res){ // Will bypass checkCredentials m
     try{
         const requestBody = req.body
         const name = requestBody.name
-        const id = requestBody.id
+        const email = requestBody.email
         const password = requestBody.password
         const hashedPassword = await bcrypt.hash(password,5)
 
         await UserModel.create({
             name : name,
-            email : id,
+            email : email,
             password : hashedPassword,
             type : "user"
         })
 
-        res.status(201).json({message: `New user with ${id} created successfully.`})
+        res.status(201).json({message: `New user with ${email} created successfully.`})
     }
     catch(error){
         res.status(500).json({message: `Error at backend with error : ${error.message}`})
@@ -34,11 +33,11 @@ export const signUp = async function(req,res){ // Will bypass checkCredentials m
 export const login = async function(req,res){ // Will pass checkCredentials middleware first
     try{
         const requestBody = req.body
-        const id = requestBody.id
+        const email = requestBody.email
         const password = requestBody.password
 
         const response = await UserModel.findOne({
-            email : id
+            email : email
         })
 
         if(!response){

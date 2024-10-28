@@ -1,8 +1,9 @@
-import { UserModel } from '../db/model.js'
-import { CourseModel } from '../db/model.js'
+import { UserModel,CourseModel, PurchasesModel} from '../db/model.js'
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt'
 import dotenv from 'dotenv'; 
+import mongoose from 'mongoose';
+
 dotenv.config()
 const JWT_SECRET = process.env.JWT_SECRET
 
@@ -11,18 +12,18 @@ export const adminSignUp = async function(req,res){ // Will bypass checkCredenti
     try{
         const requestBody = req.body
         const name = requestBody.name
-        const id = requestBody.id
+        const email = requestBody.email
         const password = requestBody.password
         const hashedPassword = await bcrypt.hash(password,5)
 
         await UserModel.create({
             name : name,
-            email : id,
+            email : email,
             password : hashedPassword,
             type : "admin"
         })
 
-        res.status(201).json({message: `New admin with ${id} created successfully.`})
+        res.status(201).json({message: `New admin with ${email} created successfully.`})
     }
     catch(error){
         res.status(500).json({message: `Error at backend with error : ${error.message}`})
@@ -32,11 +33,11 @@ export const adminSignUp = async function(req,res){ // Will bypass checkCredenti
 export const adminLogin = async function(req,res){ // Will pass checkCredentials middleware first
     try{
         const requestBody = req.body
-        const id = requestBody.id
+        const email = requestBody.email
         const password = requestBody.password
 
         const response = await UserModel.findOne({
-            email : id,
+            email : email,
             type : "admin"
         })
 
@@ -77,26 +78,54 @@ export const adminLogout = function(req,res){ // Will pass auth middleware first
 // Functionalities
 export const addCourse = async function(req,res){ 
     try{
-        
+        const requestBody = req.body
+        const title = requestBody.title
+        const description = requestBody.description
+        const price = requestBody.price
+        const imgUrl = requestBody.imgUrl
+
+        await CourseModel.create({
+            adminId : req.objId,
+            title : title,
+            description : description,
+            price : price,
+            imgUrl : imgUrl
+        })
+
+        res.status(201).json({message:`Course with title ${title} created successfully`})
     }
     catch(error){
         res.status(500).json({message: `Error at backend with error : ${error.message}`})
     }
 }
-
-export const addCourseContent = async function(req,res){ 
-    try{
-        
-    }
-    catch(error){
-        res.status(500).json({message: `Error at backend with error : ${error.message}`})
-    }
-}
-
 
 export const updateCourse = async function(req,res){ 
     try{
-        
+        const requestBody = req.body
+        const courseId = requestBody.courseId
+        const title = requestBody.title
+        const description = requestBody.description
+        const price = requestBody.price
+        const imgUrl = requestBody.imgUrl
+
+        const response = await CourseModel.findOneAndUpdate({
+            _id : courseId,
+            adminId : req.objId,
+        },{
+            _id : new mongoose.Types.ObjectId(`${courseId}`),
+            adminId : req.objId,
+            title : title,
+            description : description,
+            price : price,
+            imgUrl : imgUrl
+        })
+
+        if(response){
+            res.status(200).json({message : `Course with id ${courseId} by admin ${req.objId} updated successfully`}) 
+        }
+        else{
+            res.status(400).json({message: `Course with id ${courseId} by admin ${req.objId} update failed`})
+        }
     }
     catch(error){
         res.status(500).json({message: `Error at backend with error : ${error.message}`})
@@ -105,7 +134,20 @@ export const updateCourse = async function(req,res){
 
 export const deleteCourse = async function(req,res){ 
     try{
-        
+        const requestBody = req.body
+        const courseId = requestBody.courseId
+     
+        const response = await CourseModel.findOneAndDelete({
+            _id : courseId,
+            adminId : req.objId
+        })
+
+        if(response){
+            res.status(200).json({message : `Course with id ${courseId} by admin ${req.objId} deleted successfully`}) 
+        }
+        else{
+            res.status(400).json({message: `Course with id ${courseId} by admin ${req.objId} delete failed`})
+        }
     }
     catch(error){
         res.status(500).json({message: `Error at backend with error : ${error.message}`})
@@ -114,7 +156,16 @@ export const deleteCourse = async function(req,res){
 
 export const viewAdminAllCourses = async function(req,res){ 
     try{
-        
+        const response = await CourseModel.find({
+            adminId : req.objId
+        })
+
+        if(response){
+            res.status(200).json({message : `All courses created by admin :  ${req.objId} fetched successfully`,response}) 
+        }
+        else{
+            res.status(400).json({message: `All courses created by admin :  ${req.objId} fetch failed`})
+        }
     }
     catch(error){
         res.status(500).json({message: `Error at backend with error : ${error.message}`})
@@ -123,7 +174,18 @@ export const viewAdminAllCourses = async function(req,res){
 
 export const viewMetrics = async function(req,res){ 
     try{
-        
+        console.log("Work in progress")
+        const response = await PurchasesModel.find({
+            adminId : req.objId
+        })
+
+        if(response){
+            res.status(200).json({message : `All courses purchased from the library of admin :  ${req.objId} fetched successfully`,response}) 
+        }
+        else{
+            res.status(400).json({message: `All courses purchased from the library of admin :  ${req.objId} fetch failed`})
+        }
+
     }
     catch(error){
         res.status(500).json({message: `Error at backend with error : ${error.message}`})

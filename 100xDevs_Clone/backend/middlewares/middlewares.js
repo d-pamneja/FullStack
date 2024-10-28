@@ -17,12 +17,11 @@ export const logger = function (req,res,next){
 const signUpUserSchema = z.object({
     name : z.string(),
     email : z.string().email(),
-    password : z.string().min(5).refine((password) => /[A-Z]/.test(password), {message: "Required atleast one uppercase character"}).refine((password) => /[a-z]/.test(password), {message: "Required atleast one lowercase character"}).refine((password) => /[0-9]/.test(password), {message: "Required atleast one number"}).refine((password) => /[!@#$%^&*]/.test(password), {message: "Required atleast one special character"}),
-    type : z.string()
+    password : z.string().min(5).refine((password) => /[A-Z]/.test(password), {message: "Required atleast one uppercase character"}).refine((password) => /[a-z]/.test(password), {message: "Required atleast one lowercase character"}).refine((password) => /[0-9]/.test(password), {message: "Required atleast one number"}).refine((password) => /[!@#$%^&*]/.test(password), {message: "Required atleast one special character"})
 })
 
 const loginUserSchema = z.object({
-    id : z.string().email(),
+    email : z.string().email(),
     password : z.string()
 })
 

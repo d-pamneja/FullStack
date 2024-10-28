@@ -5,14 +5,16 @@ import { login,signUp,logout,buyCourse,viewCourse,viewAllCourses,viewMyCourses }
 const userRouter = Router()
 userRouter.use(logger)
 
-// Routes
+// Routes 
 userRouter.post("/sign-up",checkCredentials,signUp)
 userRouter.post("/login",loginCheckCredentials,login) 
-userRouter.get("/logout",auth,logout) 
-userRouter.post("/buy-course",auth,buyCourse)
-userRouter.get("/view-course",auth,viewCourse)
-userRouter.get("/view-my-courses",auth,viewMyCourses)
-userRouter.get("/view-all-courses",auth,viewAllCourses)
+
+userRouter.use(auth) // For all endpoints below this, the users needs to be authenticated
+userRouter.get("/logout",logout) 
+userRouter.post("/buy-course",buyCourse)
+userRouter.get("/view-course",viewCourse)
+userRouter.get("/view-my-courses",viewMyCourses)
+userRouter.get("/view-all-courses",viewAllCourses)
 
 
 // Exporting the user Router
