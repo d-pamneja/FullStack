@@ -8,6 +8,7 @@ userRouter.use(logger)
 // Routes 
 userRouter.post("/sign-up",checkCredentials,signUp)
 userRouter.post("/login",loginCheckCredentials,login) 
+userRouter.get("/view-all-courses",viewAllCourses)
 
 userRouter.use(auth) // For all endpoints below this, the users needs to be authenticated
 userRouter.get("/logout",logout) 
@@ -15,7 +16,6 @@ userRouter.post("/buy-course",buyCourse)
 userRouter.get("/view-course",viewCourse)
 userRouter.get("/valid-course",courseIsPurchased)
 userRouter.get("/view-my-courses",viewMyCourses)
-userRouter.get("/view-all-courses",viewAllCourses)
 
 
 // Exporting the user Router
