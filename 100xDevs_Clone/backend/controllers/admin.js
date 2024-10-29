@@ -65,7 +65,8 @@ export const adminLogin = async function(req,res){ // Will pass checkCredentials
     }
 }
 
-export const adminLogout = function(req,res){ // Will pass auth middleware first
+// All endpoints below will only be passed once authenticated
+export const adminLogout = function(req,res){ 
     try{
         return res.status(200).json({message:`User with ${req.objId} object id successfully logged out.`})
     }
@@ -174,16 +175,21 @@ export const viewAdminAllCourses = async function(req,res){
 
 export const viewMetrics = async function(req,res){ 
     try{
-        console.log("Work in progress")
         const response = await PurchasesModel.find({
-            adminId : req.objId
+            adminId : new mongoose.Types.ObjectId(`${req.objId}`)
         })
 
         if(response){
-            res.status(200).json({message : `All courses purchased from the library of admin :  ${req.objId} fetched successfully`,response}) 
+            const sales = response.length
+            const courses = await CourseModel.find({
+                _id : response.map(purchase=>{return purchase.courseId})
+            })
+            let revenues = courses.reduce((revenue, course) => {return revenue + course.price;}, 0); // this iterates through each course in courses, adding each course.price to the revenue accumulator, which starts at 0.
+
+            res.status(200).json({message : `Metrics from the library of admin :  ${req.objId} loaded successfully`,sales,revenues}) 
         }
         else{
-            res.status(400).json({message: `All courses purchased from the library of admin :  ${req.objId} fetch failed`})
+            res.status(400).json({message: `Metrics from the library of admin :  ${req.objId} not loaded`})
         }
 
     }
