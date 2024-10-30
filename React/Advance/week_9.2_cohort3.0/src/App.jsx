@@ -1,4 +1,4 @@
-import { useState,useEffect } from 'react'
+import React,{useState,useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
@@ -108,21 +108,106 @@ import './App.css'
 // }
 
 // Children - This basically allows you to pass components or elements as props to other components
-function App(){
-  const [showTimer,setShowTimer]= useState(0)
+// function App(){
+//   const [showTimer,setShowTimer]= useState(0)
 
-  return <div style={{display:"flex"}}>
-    <Card child={"Hello DP"}/>
-    <Card child={<div>Hello again DP</div>}/>
-  </div>
+//   return <div style={{display : 'flex',color : 'black'}}>
+//     <Card child={"Hello DP"}/>
+//     <Card child={<h4 style={{color : 'black'}}><b>Hola Amigo</b></h4>}/>
+//     <Card child={<p style={{color : 'black'}}>Kaise ho, theek ho?</p>}/>
+
+//     <Card>
+//       This is the best way to store a particular content as a child of the card tag
+//     </Card>
+//   </div>
+// }
+
+// function Card({child}){
+//   return <>
+//     <div style={{
+//       border : '1px solid #ccc',
+//       borderRadius : '5px', 
+//       color : 'White',
+//       padding : '20px',
+//       margin : '10px',
+//       boxShadow : '2px 2px 5px rgba(0,0,0,0.1)'
+//     }}>
+//       {child}
+//     </div>
+//   </>
+// }
+
+// Lists and Keys - In this way, you can create a list and map it's components to a uniuqe/custom component. Note that in that case, 
+// each component must have their own unique identifier. That unique identifier has to be passed as a key
+function App(){
+  const todos = [
+    {
+      "id" : 1,
+      "title" : "go to gym",
+      "done" : true
+    },
+    {
+      "id" : 2,
+      "title" : "each lunch",
+      "done" : false
+    }
+  ]
+
+  
+  const toDoComponents = todos.map(todo => <ToDo key={todo.id} title={todo.title} done={todo.done}></ToDo>)
+
+  return( // Error Boundary protects the speical card component
+      <div>
+        {toDoComponents}
+        <ErrorBoundary> 
+            <CardSpeacial/>
+        </ErrorBoundary>
+    </div>
+  )
+}
+// These are called inline styling, when you provide the style inside the div
+function ToDo({title,done}){
+  return(
+    <div style={{marginBottom:'10px', color : 'white', backgroundColor : 'black', border : '1px solid #ccc', borderRadius : '15px'}}>  
+      {title} - {done ? "Done" : "Not Done!"}
+    </div>
+  )
 }
 
-function Card({child}){
-  return <>
-    <span style={{background : 'black', borderRadius : 10, color : 'White',padding : 10,margin : 10}}>
-      {child}
-    </span>
-  </>
+// Error Boundary - Very Useful method of containing an error. If any particular component does not work or throws an error, usually the entire website comes crashing down
+// Instead, we can use error boundaries to contain that error so that the particular component at fault only goes down or shows error, rest website is still running
+// Error boundaries are React components that catch JavaScript errors in their child component tree and display a fallback UI.
+// This can only be done via class components (legacy)
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+      super(props);
+      this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+      return { hasError: true };
+  }
+
+  componentDidCatch(error, info) {
+      console.error("Error caught:", error, info);
+  }
+
+  render() {
+      if (this.state.hasError) {
+          return <h1>Something went wrong.</h1>;
+      }
+      return this.props.children; 
+  }
+}
+
+function CardSpeacial(){
+    throw new Error("Sorry I crashed.")
+    return(
+      <div style={{background : "red", borderRadius : 20,padding : 50}}>
+        hello
+      </div>
+    )
 }
 
 export default App
