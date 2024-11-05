@@ -1,11 +1,18 @@
 import './App.css'
-import { Age } from './pages/age-verification'
+import { nav } from './structure/navigation'
+import {BrowserRouter,Routes,Route} from 'react-router-dom'
 
 function App() {
 
   return (
     <div className="bg-blue-700 h-screen w-screen">
-      <Age/>
+      <BrowserRouter>
+        <Routes>
+          {nav.map((r,i)=>{
+            return <Route key = {i} path = {r.path} element = {r.element}/>
+          })}
+        </Routes>
+      </BrowserRouter>
     </div>
   )
 }

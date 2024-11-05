@@ -1,4 +1,5 @@
 import {useState} from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export function Age() {
     return(
@@ -29,6 +30,7 @@ function Text(){
 
 function Boxes(){
     const [YOB,setYOB] = useState(0)
+    const navigate = useNavigate()
 
     const changeYOB = (e) =>{
         setYOB(e.target.value)
@@ -39,7 +41,7 @@ function Boxes(){
         const cutOff = currentYear - YOB
     
         if(cutOff>=18){
-            alert("You are a verified user.")
+            navigate('/email')
         }
         else{
             alert("Sorry, you are underage.")
@@ -53,7 +55,6 @@ function Boxes(){
             <input className="bg-blue-100 text-xl text-white rounded-xl w-64 px-5 py-4" placeholder="Your Birth Year" onChange={changeYOB}></input>
             <button className="bg-blue-200 text-xl rounded-xl w-64 px-5 py-4 text-white hover:bg-blue-150" onClick={() => verifyAge(YOB)}>Continue</button>
         </div>
-            
         </>
     )
 }
