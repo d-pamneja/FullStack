@@ -1,48 +1,67 @@
-import { useRef } from "react"
+import { useRef, useState } from "react";
 
-export const OTP = () => {
+export const OTP = ({number}) => {
+  const refs = useRef([Array(number).fill(0)]);
 
-    const ref1 = useRef()
-    const ref2 = useRef()
-    const ref3 = useRef()
-    const ref4 = useRef()
-    const ref5 = useRef()
-    const ref6 = useRef()
+  return (
+    <>
+      <div className="flex justify-center">
+        {Array(number).fill(1).map((x,index)=>
+            <OTPbox
+                key={index}
+                reference={(e)=>refs.current[index]=e} // Set current reference to current index 
+                onDone={() => {
+                    if(index+1==number){
+                        return; // No next box for last box
+                    }
+                    refs.current[index+1].focus();
+                    refs.current[index+1].value = "" // Delete value as you move ahead (optional safety measure, not neccessary)
+                }}
+                goBack={() => {
+                    if(index==0){
+                        refs.current[index].value = "" // Empty current box (goBack pressed on first box should empty the box)
+                        return; // No back box for first box
+                    }
+                    refs.current[index-1].focus();
+                    refs.current[index-1].value = "" // Delete value as you move back (important safety measure)
+                }}
+            />
+        )}
+      </div>
+    </>
+  );
+};
 
 
-    return (
-        <>
-            <div className="flex justify-center">
-                <OTPbox reference={ref1} onDone={()=>{
-                    ref2.current.focus()
-                }}/>
-                <OTPbox reference={ref2} onDone={()=>{
-                    ref3.current.focus()
-                }}/>
-                <OTPbox reference={ref3} onDone={()=>{
-                    ref4.current.focus()
-                }}/>
-                <OTPbox reference={ref4} onDone={()=>{
-                    ref5.current.focus()
-                }}/>
-                <OTPbox reference={ref5} onDone={()=>{
-                    ref6.current.focus()
-                }}/>
-                <OTPbox reference={ref6}/>
-            </div>
-        </>
-    )
-}
+function OTPbox({reference, onDone, goBack }) {
 
-function OTPbox(
-    {reference,onDone}
-){
+    const [inputBoxVal, setInputBoxVal] = useState("")
 
-    return(
-        <>
-            <input ref={reference} onChange={(e)=>{
-                onDone()
-            }} type="text" className="w-[40px] h-[50px] rounded-2xl bg-blue-100 text-white text-center m-1 outline-none"></input> 
-        </>
-    )
+  return (
+    <div>
+      <input
+        value={inputBoxVal} // Explicitly control the input value
+        ref={reference}
+        onKeyUp={(e) => {
+          if (e.key == "Backspace") {
+            goBack();
+          }
+        }}
+        onChange={(e) => {
+          const val = e.target.value;
+
+          // Check if the input is numeric
+          if (/^\d*$/.test(val)) {
+            // Only update state if value is numeric
+            setInputBoxVal(val);
+            if (val) onDone();
+          } else {
+            console.log("Non-numeric input"); // Log non-numeric input
+          }
+        }}
+        type="text"
+        className="w-[40px] h-[50px] rounded-2xl bg-blue-100 text-white text-center m-1 outline-none"
+      />
+    </div>
+  );
 }
