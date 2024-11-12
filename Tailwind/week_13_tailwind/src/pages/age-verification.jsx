@@ -1,5 +1,6 @@
 import {useState} from 'react'
 import { useNavigate } from 'react-router-dom'
+import { GoogleGeminiEffectDemo } from '../components/gemini'
 
 export function Age() {
     return(
@@ -8,6 +9,7 @@ export function Age() {
             <Text/>
             <Boxes/>
         </div>
+        // <GoogleGeminiEffectDemo/>
     )
 }
 
