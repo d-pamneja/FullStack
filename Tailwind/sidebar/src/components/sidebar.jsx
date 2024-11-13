@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 // // Naive Approach
 // export function Sidebar(){ 
@@ -42,20 +42,48 @@ import { useState } from "react"
 //     )
 // }
 
-// Best Approach - Device Based Button Controlled Sidebar
+// Best Approach - Device Based Button Controlled Sidebar which automatically closes when screen size goes below threshold
+
+const useMediaQuery = (query)=>{
+    const [matches,setMatches] = useState(false)
+
+    useEffect(()=>{
+        const media = window.matchMedia(query)
+        if(media.matches != matches){
+            setMatches(media.matches)
+        }
+
+        const listner = () => setMatches(media.matches)
+        media.addListener(listner)
+
+        return () => media.removeListener(listner)
+    },[matches,query])
+
+    return matches
+}
 
 export function Sidebar(){
     const [sidebarOpen, setSidebarOpen] = useState(true)
+    const isDesktop = useMediaQuery("(min-width:992px)")
+
+    useEffect(()=>{
+        if(isDesktop==false){
+            setSidebarOpen(false)
+        }
+        else{
+            setSidebarOpen(true)
+        }
+    },[isDesktop])
 
     return(
         <div>
-            <div className="flex">
-                <div className={`${sidebarOpen ? "w-72" : "w-20"} h-screen transition-all duration-300 dark:bg-white bg-red-200`}>
+            <div className="flex mx-2">
+                <div className={`${sidebarOpen ? "w-72" : "w-20"} h-screen transition-all duration-300 dark:bg-white bg-white border-2 shadow-lg`}>
                     <div className={`h-full bg-grey-50 ${sidebarOpen ? "p-4" : "p-2"}`}>
                         <button onClick={() => {
                             setSidebarOpen(e => !e)
                         }} className="">
-                            Close
+                            {sidebarOpen ? "Close" : "Open"}
                         </button>
                         {sidebarOpen && 
                             <div className="flex items-start justify-between">
@@ -85,14 +113,6 @@ export function Sidebar(){
                         </div>
                         
                     </div>
-                </div>
-                <div className="bg-green-200 dark:bg-green-100 text-black dark:text-white w-full">
-                    Content
-                    <button onClick={()=>{
-                        document.querySelector("html").classList.toggle("dark")  // Dark Mode
-                    }}>
-                        Change Theme
-                    </button>
                 </div>
             </div>
         </div>
