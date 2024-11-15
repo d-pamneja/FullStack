@@ -80,6 +80,93 @@ delayedCall(2000,()=>{
     })
 })
 
+// Interface - Other Features
+
+interface Address {
+    street : string,
+    houseNo : string,
+    pincode : number
+}
+
+interface User {
+    name : string,
+    age? : number // This means that age parameter is optional, and if it does exist, it HAS TO BE A NUMBER, 
+    address? : Address // An interface can also use other interfaces, with which we can create complex interfaces (note how the address here is optional)
+    greet : () => string; // This is a function which expects no arguments and returns a string type object
+}
+
+// Now, interfaces can also be used as classes, for example : 
+
+const user1:User = { // Here, we have made an instance of User interface (or class in use case) called user1
+    name : "Dhruv",
+    age : 23,
+    greet : ()=>{
+        return `Hi ${user1.name}`
+    }
+}
+
+console.log(user1.greet()) // We can call functions of this instance which are made available to the interface by default
+
+// We can also create other classes which IMPLEMENT this interface
+class Admin implements User {
+    name : string
+    greet : ()=> string
+    no : number
+
+    constructor(name:string,no:number){ // Define all the primitives it is SUPPOSE to have and initialise them. Note that in this case, whatever is 
+        // compulsory in user class(inherited class/interface) that DEFINETELY has to be there, and one can also add other variables to admin class. 
+        this.name = name,
+        this.greet = ()=>{
+            return `Hi Admin, ${name}`
+        }
+        this.no = no
+    }
+}
+
+let ad1 = new Admin("DP",23)
+console.log(ad1.greet())
+
+// Also, we can extend classes
+class Shape {
+    area(){
+        console.log("Function to calculate area.")
+    }
+}
+
+class Rectangle extends Shape{
+    width : number
+    height : number 
+
+    constructor(width:number,height:number){
+        super() // This means extend and call the constructor and all functions of the extended class (i.e. Shape)
+        this.width = width,
+        this.height = height
+    }
+}
+
+const rect1 = new Rectangle(1,2);
+rect1.area()
+
+// Abstract classes
+// Now, a key difference between Abstract classes and interfaces is that we can have default methods (eg: functions) defiend in it which can extend to other classes, but cannot do the same in interface
+abstract class Shape2 {
+    area():void{ // An area function which returns void 
+        console.log("Function to calculate area.")
+    }
+}
+
+class Sqaure extends Shape{
+    side : number
+
+    constructor(side:number){
+        super() // This means extend and call the constructor and all functions of the extended class (i.e. Shape2)
+        this.side = side
+    }
+}
+
+const sq1 = new Sqaure(4)
+sq1.area()
+
 // Also, one can also create type (very similar to interface, but allow for some added operations)
 
 // OR operation (Unions)
