@@ -2,3 +2,6 @@
 node_modules
 dist
 .env
+
+# Content
+cohort3-cotent.txt
