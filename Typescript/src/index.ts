@@ -396,6 +396,92 @@ const userA4Trail2 : Readonly<UserA4> = { // here, all variables have become rea
 }
 
 
+// Key Indexing
+
+type UsersKeys = {
+    [key: string] : string
+}
+
+const users2 : UsersKeys =  {
+    "dp@25" : "abc",
+    "dp@26" : "xyc",
+    "dp@27" : "mno",
+}
+
+// Records 
+// We can use records do to the above, as shown below
+
+type UserRecords = Record<string,string> // UserRecords object will now be a type which has a string key and value also string
+
+// Maps
+// We can use the maps concept to direcly set or update values with direct instance recall
+
+const users3 = new Map<string,{name : string , age : number}>() // A map object which will take a string key and value which has specified data type
+
+// Set (Initialise values) 
+users3.set("dp@25",{name : "Dhruv", age : 25})
+users3.set("dp@26",{name : "Dhruv", age : 26})
+users3.set("dp@27",{name : "Dhruv", age : 27})
+
+// Get (Fetch values)
+const user4 = users3.get("dp@25")
+
+// Exclude 
+// Now, this lets you exclude certain types from an defined function, which can be seen below 
+
+type eventType = 'click' | 'scroll' | 'mousemove'
+type excludeEvent = Exclude<eventType,'scroll'> // Now, this excludeEvent type will exclude only scroll from the above and can accept the other two
+
+const handleEvent = (eve : excludeEvent) => {
+    console.log(`Event Type is : ${eve}`)
+}
+
+handleEvent('click')
+
+// Pick
+// This lets you pick certain types from other pre defined interfaces
+
+interface User2{
+    id : number,
+    name : string,
+    age : number,
+    email : string,
+}
+
+type user2Profile = Pick<User2,'name' | 'email'> // Now, will only pick these two from the predefined interface
+
+const displayUser2Profile = (user : user2Profile)=>{
+    console.log(`Welcome, ${user.name}, your email ID is : ${user.email}`)
+} 
+
+// TYPE INFERENCING ZOD
+import {z} from 'zod'
+import express from 'express'
+
+const app = express()
+// Define a new profile schema
+
+const UserProfile = z.object({
+    name : z.string().min(1,{message : "The user name cannot be blank"}),
+    email : z.string().email({message : "Kindly enter a valid email"}),
+    age : z.number().min(18,{message : "The user cannot be a minor"}).optional()
+})
+
+type UserProfileType = z.infer<typeof UserProfile> // With this, a new type will be created from the above parameters as defined
+
+app.put('/user',(req,res)=>{ // This function will only update when it follows all criteria sucessfully
+    const body : UserProfileType = req.body
+    const {success} = UserProfile.safeParse(body)
+
+    if(!success){
+        res.status(411).json({message : "Invalid updates"})
+    }
+    else{
+        res.status(200).json({messgae : "User updated"})
+    }
+})
+
+
 
 
 
