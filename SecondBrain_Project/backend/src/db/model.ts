@@ -12,7 +12,7 @@ const User = new Schema({
 
 const Link = new Schema({
     hash : String,
-    userID : {type : ObjectId, ref : 'User', required : true}
+    userID : {type : ObjectId, ref : 'User', required : true, unique : true}
 })
 
 const Tag = new Schema({

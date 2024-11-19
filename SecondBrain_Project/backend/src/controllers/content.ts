@@ -2,7 +2,7 @@ import { ContentModel,LinkModel,TagModel,UserModel } from "../db/model";
 import { Request,Response } from "express";
 import mongoose from 'mongoose';
 
-export const addContent = async (req:Request,res:Response) : Promise<any> =>{
+export const addContent = async (req:Request, res:Response) : Promise<any> =>{
     try{
         const requestBody = req.body
 
@@ -41,13 +41,6 @@ export const addContent = async (req:Request,res:Response) : Promise<any> =>{
                     tagIds.push(currentTagID!)
                 })
             )
-            
-            await LinkModel.create({
-                hash : link,
-                userID : userID
-            })
-
-            
 
             await ContentModel.create({
                 title : title,
@@ -71,4 +64,53 @@ export const addContent = async (req:Request,res:Response) : Promise<any> =>{
 
 }
 
-export default {addContent}
+export const viewContent = async (req : Request, res:Response) : Promise<any> =>{
+    try{
+        // @ts-ignore 
+        const userID = new mongoose.Types.ObjectId(`${req.userObjID}`)
+
+        const response = await ContentModel.find({
+            userID : userID
+        })
+
+        if(!response){
+            return res.status(404).json({message : "Error in fetching the content"})
+        }
+
+        return res.status(200).json({message : `All content for the user ${userID}`,response})
+    }
+    catch(error : any){
+        res.status(500).json({message : `Error in adding new content ${error.message}`})
+    }
+}
+
+export const deleteContent = async (req : Request, res:Response) : Promise<any> =>{
+    try{
+        // @ts-ignore 
+        const userID = new mongoose.Types.ObjectId(`${req.userObjID}`)
+        const requestBody = req.body
+
+        if(requestBody){
+            const contentID = new mongoose.Types.ObjectId(`${requestBody.contentID}`)
+
+            const response = await ContentModel.deleteOne({
+                _id : contentID,
+                userID : userID
+            })
+
+            if(!response){
+                res.status(403).json({message : "You are trying to delete "})
+            }
+
+            return res.status(200).json({message : "Content deleted successfully"})
+        }
+        else{
+            res.status(400).json({message : "Content details missing"})
+        }
+    }
+    catch(error : any){
+        res.status(500).json({message : `Error in adding new content ${error.message}`})
+    }
+}
+
+export default {addContent,viewContent,deleteContent}
