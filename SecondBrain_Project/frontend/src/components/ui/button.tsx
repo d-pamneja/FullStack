@@ -38,7 +38,7 @@ const addContentHandler = ()=>{
 // We will also use VariantProps to import all types from the above const ButtonStyles
 
 type ButtonProps = VariantProps<typeof ButtonStyles> & {
-    text : string
+    text? : string
     startIcon? : ReactElement  // React Element Tag (we will use react - icons) tag
     endIcon? : ReactElement  // React Element Tag (we will use react - icons) tag
 } & ComponentProps<"button"> // This combines the above ButtonStyles, our custom designed types and the basic types in button by default
