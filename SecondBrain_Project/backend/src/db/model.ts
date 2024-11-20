@@ -19,7 +19,7 @@ const Tag = new Schema({
     title : {type : String, required : true, unique : true}
 })
 
-const contentTypes = ['image', 'video', 'article', 'audio']
+const contentTypes = ['image', 'video', 'text', 'audio']
 
 const Content = new Schema({
     link : String,
