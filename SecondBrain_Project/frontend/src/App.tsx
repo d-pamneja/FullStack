@@ -1,24 +1,39 @@
-import { ButtonDiv } from './components/ui/button'
 import './App.css'
-import { SidebarProvider, SidebarTrigger } from "./components/ui/sidebar"
-import { AppSidebar } from './components/ui/app-sidebar'
+import { useAuth } from './context/AuthContext';
+import { Routes, Route } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom'
+import { nav } from './structure/navigation';
+import { Toaster } from 'react-hot-toast';
+
 
 function App() {
 
+  const { isLoggedIn } = useAuth()
+
   return (
-    <div className='flex justify-between w-full'>
-      <div className="flex justify-start">
-        <SidebarProvider>
-          <AppSidebar/>
-          <SidebarTrigger className=''/>
-        </SidebarProvider>
-      </div>
-      <div className='flex lg:flex-row flex-col lg:justify-between w-full'>
-        <h1 className='text-5xl font-bold mx-4'>Workspace</h1>
-        <ButtonDiv className="lg:justify-end justify-center lg:my-0 my-[20px]"/>
-      </div>
-    </div>
-      
+    <main className="min-h-screen bg-white text-black font-sans overflow-x-hidden">
+        <BrowserRouter>
+          <Toaster position="top-center"/>
+            <Routes>
+              {nav.map((r, i) => {
+                  if (!r.isRestricted) {
+                    return <Route key={i} path={r.path} element={r.element} />;
+                  } else if (r.name === "Home") {
+                    if(isLoggedIn){
+                      return (
+                        <Route
+                          key={i}
+                          path={r.path}
+                          element={r.element}
+                        />
+                      );
+                    }
+                  }
+                  return null;
+                })}
+            </Routes>
+        </BrowserRouter>
+    </main>
   )
 }
 

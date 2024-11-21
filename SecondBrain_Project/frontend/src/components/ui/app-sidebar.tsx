@@ -19,7 +19,9 @@ import {
     DropdownMenuTrigger,
   } from "./dropdown-menu"
 import { NavUser } from "./nav-user"
-  
+
+import { useAuth } from "@/context/AuthContext"
+
 
 // Menu items.
 const items = [
@@ -46,8 +48,10 @@ const items = [
 ]
 
 export function AppSidebar() {
+  const { user } = useAuth()
+
   return (
-    <Sidebar variant="floating">
+    <Sidebar variant="floating" className="w-[300px]">
         <SidebarHeader className="flex justify-start">
             <Brain className="w-20 h-10 text-purple-600"/>
             <div className="text-4xl font-bold">
@@ -80,9 +84,8 @@ export function AppSidebar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <NavUser user={{
-                        name: "dhruvP",
-                        email: "dpamneja@gmail.com",
-                        avatar: "src/assets/avatars/male-avatar.png",
+                      name : user?.username || "Guest",
+                      avatar : "src/assets/avatars/male-avatar.png"
                     }}/>
                 </DropdownMenuTrigger>
                     <DropdownMenuContent

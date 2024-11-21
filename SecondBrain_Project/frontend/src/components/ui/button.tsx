@@ -1,50 +1,13 @@
 import {cva,VariantProps} from "class-variance-authority"
 import { ComponentProps, ReactElement } from "react"
-import { useMediaQuery } from "react-responsive";
 import React from "react"
-import { CiShare2 } from "react-icons/ci";
-import { IoIosAdd } from "react-icons/io";
 import { cn } from "../../lib/utils"
 
-export const ButtonDiv = ({className} : {className? : string} )=> {
-    const isSmall = useMediaQuery({maxWidth : 639})
-    const isMedium = useMediaQuery({minWidth: 640, maxWidth : 1023})
-
-    const size = isSmall ? "sm" : isMedium ? "md" : "lg"
-
-
-    return (
-        <div className={cn("flex",className)}>
-            <Button
-                variant={"secondary"}
-                size={size}
-                text="Share Content"
-                startIcon={<CiShare2/>}
-                onClick={shareContentHandler}
-            />
-            <Button
-                variant={"primary"}
-                size={size}
-                text="Add Content"
-                startIcon={<IoIosAdd/>}
-                onClick={addContentHandler}
-            />
-        </div>
-    )
-}
-
-const shareContentHandler = ()=>{
-    console.log("content shared")
-}
-
-const addContentHandler = ()=>{
-    console.log("content added")
-}
 
 // Now, we will use ComponentProps from React, which can help us get all the basic defualt props made available in an HTML element or any other external library : https://www.totaltypescript.com/react-component-props-type-helper
 // We will also use VariantProps to import all types from the above const ButtonStyles
 
-type ButtonProps = VariantProps<typeof ButtonStyles> & {
+export type ButtonProps = VariantProps<typeof ButtonStyles> & {
     text? : string
     startIcon? : ReactElement  // React Element Tag (we will use react - icons) tag
     endIcon? : ReactElement  // React Element Tag (we will use react - icons) tag
@@ -88,7 +51,7 @@ export const Button = ({variant,size,className,...props} : ButtonProps) => { // 
     )
 }
 
-const ButtonStyles = cva( 
+export const ButtonStyles = cva( 
     ["flex","items-center"], // This means the base tailwind class which will cover all the variants
     {
         variants : { // Different types of buttons
@@ -112,4 +75,4 @@ const ButtonStyles = cva(
 ) 
 
 
-export default {ButtonDiv}
+export default Button

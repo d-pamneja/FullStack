@@ -29,16 +29,44 @@ import {
   useSidebar,
 } from "./sidebar"
 
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+
 export function NavUser({
   user,
 }: {
   user: {
     name: string
-    email: string
     avatar: string
   }
 }) {
   const { isMobile } = useSidebar()
+  const {logout} = useAuth();
+  const navigate = useNavigate();
+
+
+  const handleLogout = async (): Promise<void> => {
+    try {
+        await logout();
+        toast.success('Logged Out Successfully', { id: 'logout' });
+        navigate('/');
+    } catch (error: any) {
+        if (error.status === 400) {
+            const errorsArray: string[] = [];
+            const errors = error.response.data.details;
+            errors.forEach((err: string) => errorsArray.push(err));
+
+            if (errorsArray.length > 0) {
+                toast.error(`Logout Failed: ${errorsArray[0]}`, { id: 'login' });
+            } else {
+                toast.error('Logout Failed: Unknown error', { id: 'login' });
+            }
+        }
+    }
+};
+
+
 
   return (
     <SidebarMenu>
@@ -55,7 +83,6 @@ export function NavUser({
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
@@ -74,7 +101,6 @@ export function NavUser({
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
@@ -85,9 +111,17 @@ export function NavUser({
                 Account
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuItem>
-              <LogOut />
-              Log out
+            <DropdownMenuItem
+              onClick={async () => {
+                  try {
+                      await handleLogout();
+                  } catch (error) {
+                      console.error('Error in onClick:', error);
+                  }
+              }}
+            >
+              <LogOut/>
+              Logout
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

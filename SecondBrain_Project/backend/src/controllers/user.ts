@@ -67,10 +67,10 @@ export const login = async function(
                 Id : response._id.toString()
             },JWT_SECRET as any)
 
-            // const oldToken = req.signedCookies[`${COOKIE_NAME}`]; // Read the current cookie
-            // if (oldToken) {
-            //     res.clearCookie(COOKIE_NAME);
-            // }
+            const oldToken = req.signedCookies[`${COOKIE_NAME}`]; // Read the current cookie
+            if (oldToken) {
+                res.clearCookie(COOKIE_NAME);
+            }
         
             const expiresInMilliseconds = 7 * 24 * 60 * 60 * 1000; 
             const expires = new Date(Date.now() + expiresInMilliseconds);
@@ -84,7 +84,7 @@ export const login = async function(
                 secure : true
             });
 
-            return res.status(200).json({message:`${username} has been successfully logged in.`})
+            return res.status(200).json({message:`${username} has been successfully logged in.`,id:response._id.toString()})
         }
         else{
             res.status(403).json({message: "Incorrect password."})
@@ -102,17 +102,17 @@ export const verifyUser = async (
 ): Promise<any>=>{
     try {
         if(!res.locals.jwtData){
-            return res.status(403).json({message : "Invalid authorisation"})
+            return res.status(403).json({message : "Not authorised."})
         }
         
-        const existingUser = await UserModel.findById(res.locals.jwtData.id);
+        const existingUser = await UserModel.findById(res.locals.jwtData);
         if(!existingUser){
             return res.status(401).json({
                 message : "User not registered or Token malfunctioned."
             })
         }
 
-        if(existingUser._id.toString() != res.locals.jwtData.id){
+        if(existingUser._id.toString() != res.locals.jwtData){
             return res.status(401).send("Permissions did not match.");
         }
 

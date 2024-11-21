@@ -42,11 +42,8 @@ export const checkCredentials =  (req : Request, res : Response, next : NextFunc
             if(!requestBody){
                 res.status(400).json({message:"Invalid request body"})
             }
-            else if(!requestBody.name){
+            else if(!requestBody.username){
                 res.status(411).json({message:"User name not found."})
-            }
-            else if(!requestBody.email){
-                res.status(411).json({message:"User id not found."})
             }
             else if(!requestBody.password){
                 res.status(411).json({message:"Password not found."})

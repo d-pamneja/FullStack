@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {checkCredentials}  from "../middlewares/user";
 import {auth} from "../middlewares/auth";
-import { signUp,login, logout } from "../controllers/user";
+import { signUp,login, logout,verifyUser } from "../controllers/user";
 
 export const userRouter = Router()
 
@@ -9,5 +9,6 @@ export const userRouter = Router()
 userRouter.post('/signup',checkCredentials as any,signUp) 
 userRouter.post('/login',checkCredentials as any,login)
 userRouter.get('/logout',auth as any,logout)
+userRouter.get('/auth-status',auth as any,verifyUser) 
 
 export default userRouter

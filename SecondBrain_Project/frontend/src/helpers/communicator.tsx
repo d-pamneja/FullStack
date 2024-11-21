@@ -11,8 +11,8 @@ export const loginUser = async (
     }
     
     const data = await res.data;
-
     localStorage.setItem('userID',data.id)
+
     return data;
 }
 
