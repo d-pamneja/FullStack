@@ -47,8 +47,7 @@ const items = [
 
 export function AppSidebar() {
   return (
-    <Sidebar>
-
+    <Sidebar variant="floating">
         <SidebarHeader className="flex justify-start">
             <Brain className="w-20 h-10 text-purple-600"/>
             <div className="text-4xl font-bold">
@@ -101,7 +100,6 @@ export function AppSidebar() {
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarFooter>
-        
     </Sidebar>
   )
 }

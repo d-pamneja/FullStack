@@ -3,10 +3,15 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv'; 
 dotenv.config()
 const JWT_SECRET = process.env.JWT_SECRET
+import { COOKIE_NAME } from '../utils/constants';
 
-export const auth =  (req : Request, res : Response, next : NextFunction) =>{
+export const auth =  (
+    req : Request, 
+    res : Response, 
+    next : NextFunction
+) =>{
     try{
-        const requestAuthorization = req.headers.authorization
+        const requestAuthorization = req.signedCookies[`${COOKIE_NAME}`];
         const decodedInfo = jwt.verify(requestAuthorization as any,JWT_SECRET as any)
 
         if(!decodedInfo){
@@ -15,7 +20,7 @@ export const auth =  (req : Request, res : Response, next : NextFunction) =>{
         else{
             // @ts-ignore 
             // The above comment effectively ignores the potential error typescript is trying to warn us about
-            req.userObjID = decodedInfo.Id
+            res.locals.jwtData = decodedInfo.Id
             return next();
         }
     }

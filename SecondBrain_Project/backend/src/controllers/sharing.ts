@@ -15,7 +15,7 @@ export const shareLink = async (req : Request, res: Response) : Promise<any> => 
             const setting = requestBody.share
             if(setting===true){
                 // @ts-ignore
-                const userID = new mongoose.Types.ObjectId(`${req.userObjID}`)
+                const userID = new mongoose.Types.ObjectId(`${res.locals.jwtData}`)
 
                 const shareToken = jwt.sign({ 
                     userID : userID,
@@ -36,7 +36,7 @@ export const shareLink = async (req : Request, res: Response) : Promise<any> => 
             }
             else{ // Delete if they toggle off the share button
                 // @ts-ignore
-                const userID = new mongoose.Types.ObjectId(`${req.userObjID}`)
+                const userID = new mongoose.Types.ObjectId(`${res.locals.jwtData}`)
 
                 await LinkModel.deleteOne({
                     userID : userID

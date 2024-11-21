@@ -5,11 +5,16 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv'; 
 dotenv.config()
 const JWT_SECRET = process.env.JWT_SECRET
+import { COOKIE_NAME } from "../utils/constants"
 
 
 
 // Functionalities
-export const signUp = async function(req : Request,res : Response): Promise<any>{ // Will bypass checkCredentials middleware first
+export const signUp = async function(
+    req : Request,
+    res : Response
+    ): Promise<any>
+{ // Will bypass checkCredentials middleware first
     try{
         const requestBody = req.body
         const username = requestBody.username
@@ -37,7 +42,11 @@ export const signUp = async function(req : Request,res : Response): Promise<any>
     }
 }
 
-export const login = async function(req : Request,res : Response) : Promise<any>{ // Will pass checkCredentials middleware first
+export const login = async function(
+        req : Request,
+        res : Response
+        ) : Promise<any>
+{ // Will pass checkCredentials middleware first
     try{
         const requestBody = req.body
         const username = requestBody.username
@@ -58,7 +67,24 @@ export const login = async function(req : Request,res : Response) : Promise<any>
                 Id : response._id.toString()
             },JWT_SECRET as any)
 
-            return res.status(200).json({message:"JWT Generated",token})
+            // const oldToken = req.signedCookies[`${COOKIE_NAME}`]; // Read the current cookie
+            // if (oldToken) {
+            //     res.clearCookie(COOKIE_NAME);
+            // }
+        
+            const expiresInMilliseconds = 7 * 24 * 60 * 60 * 1000; 
+            const expires = new Date(Date.now() + expiresInMilliseconds);
+
+            res.cookie(COOKIE_NAME, token, {
+                path: "/",
+                domain: "localhost",
+                expires,
+                httpOnly: true,
+                signed: true,
+                secure : true
+            });
+
+            return res.status(200).json({message:`${username} has been successfully logged in.`})
         }
         else{
             res.status(403).json({message: "Incorrect password."})
@@ -69,7 +95,65 @@ export const login = async function(req : Request,res : Response) : Promise<any>
     }
 }
 
+export const verifyUser = async (
+    req : Request,
+    res : Response,
+    next : NextFunction
+): Promise<any>=>{
+    try {
+        if(!res.locals.jwtData){
+            return res.status(403).json({message : "Invalid authorisation"})
+        }
+        
+        const existingUser = await UserModel.findById(res.locals.jwtData.id);
+        if(!existingUser){
+            return res.status(401).json({
+                message : "User not registered or Token malfunctioned."
+            })
+        }
+
+        if(existingUser._id.toString() != res.locals.jwtData.id){
+            return res.status(401).send("Permissions did not match.");
+        }
+
+        return res.status(200).json({
+            message : "User successfully verified.",
+            id : existingUser._id.toString(),
+            username : existingUser.username
+        });
+    } 
+    catch (error : any) {
+        console.log(`Error in logging in user : ${error.message}`);
+
+        return res.status(500).json({
+            message : "Error in verifying in user",
+            reason : error.message
+        })
+    }
+};
+
+export const logout = async (
+    req : Request,
+    res : Response,
+    next : NextFunction
+): Promise<any>=>{
+    try {
+        res.clearCookie(COOKIE_NAME);
+        return res.status(200).json({
+            message : "User successfully logged out."
+        });
+    } 
+    catch (error : any) {
+        console.log(`Error in logging out user : ${error.message}`);
+
+        return res.status(500).json({
+            message : "Error in logging in user",
+            reason : error.message
+        })
+    }
+};
+
 // All endpoints below will only be passed once authenticated
 
 
-export default {signUp,login}
+export default {signUp,login,logout}

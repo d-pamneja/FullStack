@@ -13,7 +13,7 @@ export const addContent = async (req:Request, res:Response) : Promise<any> =>{
             const tags = requestBody.tags
 
             // @ts-ignore
-            const userID = new mongoose.Types.ObjectId(`${req.userObjID}`)
+            const userID = new mongoose.Types.ObjectId(`${res.locals.jwtData}`)
 
             // Setting new tags
             tags.map(async (tag : string)=>{
@@ -67,7 +67,7 @@ export const addContent = async (req:Request, res:Response) : Promise<any> =>{
 export const viewContent = async (req : Request, res:Response) : Promise<any> =>{
     try{
         // @ts-ignore 
-        const userID = new mongoose.Types.ObjectId(`${req.userObjID}`)
+        const userID = new mongoose.Types.ObjectId(`${res.locals.jwtData}`)
 
         const response = await ContentModel.find({
             userID : userID
@@ -87,7 +87,7 @@ export const viewContent = async (req : Request, res:Response) : Promise<any> =>
 export const deleteContent = async (req : Request, res:Response) : Promise<any> =>{
     try{
         // @ts-ignore 
-        const userID = new mongoose.Types.ObjectId(`${req.userObjID}`)
+        const userID = new mongoose.Types.ObjectId(`${res.locals.jwtData}`)
         const requestBody = req.body
 
         if(requestBody){
