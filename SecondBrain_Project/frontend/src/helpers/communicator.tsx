@@ -59,3 +59,19 @@ export const checkAuthStatus = async () => {
         return null; 
     }
   };
+
+
+export const fetchData = async () =>{
+    try{
+        const res = await axios.get("/content/viewContent")
+        if(res.status===404 || res.status===500){
+            throw new Error("Error caught successfully")
+        }
+        
+        const data = await res.data
+        return data
+    }
+    catch(error){
+        return null
+    }
+}
