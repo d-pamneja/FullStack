@@ -5,6 +5,7 @@ type Props = {
     type : string,
     label : string,
     fullWidth?: boolean;
+    placeholder?:string
 };
 
 const Input = (props: Props) =>{
@@ -12,7 +13,7 @@ const Input = (props: Props) =>{
         <TextField 
             margin='normal' 
             InputLabelProps={{style:{color:'white'}}} 
-            name={props.name} 
+            name={props.name? props.name : props.placeholder? props.placeholder : ""} 
             label={props.label} 
             type={props.type} 
             fullWidth={props.fullWidth}

@@ -17,6 +17,7 @@ export type ButtonProps = VariantProps<typeof ButtonStyles> & {
 export const Button = ({variant,size,className,...props} : ButtonProps) => { // Means we will be giving variant,size and our classname, along with all props defined above
     const IconSizeMap = {
         sm: "w-4 h-4 mx-0.5",
+        smNoShadow : "w-4 h-4 mx-0.5",
         md: "w-5 h-5 mx-1", 
         lg: "w-6 h-6 mx-1.5", 
         icon : "w-9 h-9"
@@ -58,10 +59,12 @@ export const ButtonStyles = cva(
             variant : { // Different types of variant types
                 primary : ["bg-purple-600","hover:bg-purple-900","text-white"],
                 secondary : ["bg-purple-300","hover:bg-purple-700","text-purple-500"],
-                outline: ["border","border-input","bg-background","shadow-sm","hover:bg-accent","hover:text-accent-foreground"]
+                outline: ["border","border-input","bg-background","shadow-sm","hover:bg-accent","hover:text-accent-foreground"],
+                ghost: ["hover:bg-accent","hover:text-accent-foreground"]
             },
             size : { // Different types of size types (for button and span elements inside that button)
                 sm : ["rounded-xl","px-2","py-1","mx-2","shadow-xl"],
+                smNoShadow : ["rounded-xl","px-2","py-1","mx-2"],
                 md : ["rounded-2xl","px-3","py-2","mx-3","shadow-xl"],
                 lg : ["rounded-3xl","px-4","py-3","mx-4","shadow-xl"],
                 icon: ["rounded-xl","p-1","mx-2","shadow-xl"]

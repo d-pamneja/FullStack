@@ -10,7 +10,7 @@ const userSchema = z.object({
                 .min(3,"The username should be a minimum of three characters")
                 .max(10, "The username should be a maximum of 10 characters"),
     password : z.string()
-                .min(8,"The password has to be a minimum of 6 characters")
+                .min(8,"The password has to be a minimum of 8 characters")
                 .max(20,"The password has to be a maximum of 20 characters")
                 .refine((password) => /[A-Z]/.test(password), {message: "Required atleast one uppercase character"})
                 .refine((password) => /[a-z]/.test(password), {message: "Required atleast one lowercase character"})
