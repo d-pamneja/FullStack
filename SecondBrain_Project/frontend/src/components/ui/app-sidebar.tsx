@@ -51,7 +51,7 @@ export function AppSidebar() {
   const { user } = useAuth()
 
   return (
-    <Sidebar variant="floating" className="w-[300px]">
+    <Sidebar variant="floating">
         <SidebarHeader className="flex justify-start">
             <Brain className="w-20 h-10 text-purple-600"/>
             <div className="text-4xl font-bold">
