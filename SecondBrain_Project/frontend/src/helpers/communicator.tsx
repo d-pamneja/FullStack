@@ -75,3 +75,38 @@ export const fetchData = async () =>{
         return null
     }
 }
+
+export const getAllTags = async () =>{
+    const res = await axios.get("/content/getTags")
+    if(res.status != 200){
+        throw new Error("Unable to fetch tags.")
+    }
+
+    const data = await res.data;
+    return data;
+}
+
+export const viewContent = async ()=>{
+    const res = await axios.get("/content/viewContent");
+    if(res.status != 200){
+        throw new Error("Unable to Add content.")
+    }
+    
+    const data = await res.data;
+    return data;
+}
+
+export const addContent = async (
+    title : string,
+    link : string,
+    type : string,
+    tags : Array<{value : string}>
+)=>{
+    const res = await axios.post("/content/addContent",{title, link,type,tags});
+    if(res.status != 201){
+        throw new Error("Unable to Add content.")
+    }
+    
+    const data = await res.data;
+    return data;
+}

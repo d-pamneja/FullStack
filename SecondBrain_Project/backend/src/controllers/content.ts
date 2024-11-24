@@ -2,6 +2,19 @@ import { ContentModel,LinkModel,TagModel,UserModel } from "../db/model";
 import { Request,Response } from "express";
 import mongoose from 'mongoose';
 
+export const getAllTags = async (req : Request, res : Response) : Promise<any> => {
+    try{
+        const response = await TagModel.find()
+        if(!response){
+            return res.status(404).json({message : "Error in fetching the tags"})
+        }
+        return res.status(200).json({message : `All tags fetched`,response})
+    }
+    catch(error : any){
+        res.status(500).json({message : `Error in fetching tags ${error.message}`})
+    }
+}
+
 export const addContent = async (req:Request, res:Response) : Promise<any> =>{
     try{
         const requestBody = req.body
@@ -16,29 +29,24 @@ export const addContent = async (req:Request, res:Response) : Promise<any> =>{
             const userID = new mongoose.Types.ObjectId(`${res.locals.jwtData}`)
 
             // Setting new tags
-            tags.map(async (tag : string)=>{
+            tags.map(async (tag : {value : string})=>{
                 const response = await TagModel.findOne({
-                    title : tag
+                    title : tag.value
                 })
 
                 if(!response){
                     await TagModel.create({
-                        title : tag
+                        title : tag.value
                     })
                 }
             })
 
             
-            let tagIds : mongoose.Types.ObjectId[] = []
+            let tagsArray : string[] = []
 
             await Promise.all( // Since map function does not wait for any async functions, it pushes before fetching from mongoDB, hence we use Promise All, which ensures all promises are ensured before moving to next line
-                tags.map(async (tag : String)=>{
-                    const tagCreds = await TagModel.findOne({
-                        title : tag
-                    })
-                    
-                    const currentTagID = tagCreds!._id
-                    tagIds.push(currentTagID!)
+                tags.map(async (tag : {value : string})=>{
+                    tagsArray.push(tag.value!)
                 })
             )
 
@@ -46,7 +54,7 @@ export const addContent = async (req:Request, res:Response) : Promise<any> =>{
                 title : title,
                 link : link,
                 type : type,
-                tags : tagIds,
+                tags : tagsArray,
                 userID : userID
             })
 
@@ -113,4 +121,4 @@ export const deleteContent = async (req : Request, res:Response) : Promise<any> 
     }
 }
 
-export default {addContent,viewContent,deleteContent}
+export default {getAllTags,addContent,viewContent,deleteContent}

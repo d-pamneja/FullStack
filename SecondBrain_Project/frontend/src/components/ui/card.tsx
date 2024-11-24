@@ -23,24 +23,26 @@ export const WobbleCard = ({
     setMousePosition({ x, y });
   };
   return (
-    <motion.section
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => {
-        setIsHovering(false);
-        setMousePosition({ x: 0, y: 0 });
-      }}
-      style={{
-        transform: isHovering
-          ? `translate3d(${mousePosition.x}px, ${mousePosition.y}px, 0) scale3d(1, 1, 1)`
-          : "translate3d(0px, 0px, 0) scale3d(1, 1, 1)",
-        transition: "transform 0.1s ease-out",
-      }}
-      className={cn(
-        "mx-auto w-full bg-indigo-800  relative rounded-2xl overflow-hidden",
-        containerClassName
-      )}
-    >
+      <motion.section
+        onMouseMove={handleMouseMove}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => {
+          setIsHovering(false);
+          setMousePosition({ x: 0, y: 0 });
+        }}
+        style={{
+          transform: isHovering
+            ? `translate3d(${mousePosition.x}px, ${mousePosition.y}px, 0) scale3d(1, 1, 1)`
+            : "translate3d(0px, 0px, 0) scale3d(1, 1, 1)",
+          transition: "transform 0.1s ease-out",
+          pointerEvents: "auto",  // Ensure that interactions are possible
+        }}
+        className={cn(
+          "mx-auto w-full bg-indigo-800 relative rounded-2xl overflow-hidden",
+          containerClassName
+        )}
+      >
+
       <div
         className="relative  h-full [background-image:radial-gradient(88%_100%_at_top,rgba(255,255,255,0.5),rgba(255,255,255,0))]  sm:mx-0 sm:rounded-2xl overflow-hidden"
         style={{
