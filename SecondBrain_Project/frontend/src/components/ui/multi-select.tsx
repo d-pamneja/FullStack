@@ -14,7 +14,7 @@ import { getAllTags } from "@/helpers/communicator";
 
 export type Tag = Record<"value", string>;
 
-const getTags = async () :Promise<any> => {
+const getTags = async () : Promise<any> => {
     try {
         const res = await getAllTags();
         if (res) {
@@ -129,7 +129,7 @@ export function FancyMultiSelect({
               </Badge>
             );
           })}
-          
+
           {/* Avoid having the "Search" Icon */}
           <CommandPrimitive.Input
             ref={inputRef}

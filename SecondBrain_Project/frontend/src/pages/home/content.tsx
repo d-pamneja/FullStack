@@ -8,18 +8,18 @@ import {
     PaginationPrevious,
     PaginationNext,
 } from "../../components/ui/pagination";
-import { AiOutlineLink } from "react-icons/ai";
 import { WobbleCard } from "../../components/ui/card";
 import { useAuth } from "@/context/AuthContext";
 import { viewContent } from "@/helpers/communicator";
 import { Badge } from "@/components/ui/badge";
+import LinkPreview from "@/components/ui/linkPreview";
 
-// Format Testing
 export function CardStack() {
     const {isLoggedIn} = useAuth()
   
     // Content
     type ContentValues = {
+      _id : string,
       title : string,
       link : string,
       type : string,
@@ -68,6 +68,7 @@ export function CardStack() {
           {currentItems.map((card, index) => (
             <EntryCard 
               key={index} 
+              id = {card._id}
               title={card.title} 
               link={card.link} 
               type={card.type} 
@@ -122,26 +123,21 @@ export function CardStack() {
     );
 }
   
-export function EntryCard({ title, link, type, tags }: { title: string; link: string; type: string; tags: string[] }) {
+export function EntryCard({ id,title, link, type, tags }: { id : string,title: string; link: string; type: string; tags: string[] }) {
     return (
-        <div className="max-w-7xl mx-auto md:w-full w-4/5">
+        <div className="max-w-8xl mx-auto md:w-full w-4/5">
             <WobbleCard
-                containerClassName="md:min-h-[300px] min-h-[300px] md:max-h-[300px] max-h-[300px] flex flex-col justify-between"
+                containerClassName="md:min-h-[350px] min-h-[400px] md:max-h-[350px] max-h-[400px] flex flex-col justify-between z-0"
+                id = {id}
+                title={title}
+                link={link}
             >
-                <h2 className="max-w-80 text-left text-balance text-base md:text-xl lg:text-3xl font-semibold tracking-[-0.015em] text-white">
-                    {title}
-                </h2>
-                <a 
-                    target="_blank"  
-                    href={link} 
-                    rel="noopener noreferrer" 
-                    className="flex items-center text-white hover:underline z-20"
-                    style={{ pointerEvents: "none" }}
-                >
-                    <AiOutlineLink className="w-6 h-6 stroke-current mr-2" />
-                </a>
-                <p className="mt-4 max-w-[26rem] text-left text-base/6 text-neutral-200">
-                    <Badge variant="secondary">
+                <LinkPreview url={link} />
+
+                <p className="mt-4 max-w-[26rem] text-left text-base/6 text-neutral-200" >
+                    <Badge variant="secondary" onClick={()=>{
+                        console.log("Clicked")
+                    }}>
                         {type}
                     </Badge>
                 </p>

@@ -91,8 +91,9 @@ export const viewContent = async ()=>{
     if(res.status != 200){
         throw new Error("Unable to Add content.")
     }
-    
+
     const data = await res.data;
+    console.log(data)
     return data;
 }
 
