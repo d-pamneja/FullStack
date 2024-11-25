@@ -8,6 +8,7 @@ import { toast } from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import {Input,PasswordInput} from '@/components/ui/input';
+import {GoogleSignInButton} from "@/components/ui/googleSignInButton";
 import {
   Form,
   FormControl,
@@ -137,6 +138,7 @@ const Login = () => {
               <SubmitButton className="justify-center"/>
             </form>
           </Form>
+          <GoogleSignInButton />
       </div>
     </div>
     
