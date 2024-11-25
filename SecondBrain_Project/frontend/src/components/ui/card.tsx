@@ -1,7 +1,7 @@
 "use client";
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import React, { useState,useEffect } from "react";
+import React, { useState,useEffect,useRef } from "react";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { AiOutlineLink } from "react-icons/ai";
@@ -70,6 +70,7 @@ export const WobbleCard = ({
     setMousePosition({ x, y });
   };
 
+  // Edit Content Utils
   const formSchema = z.object({
     contentID : z.string(),
     title: z.string().min(1, "Kindly enter a valid title."),
@@ -133,7 +134,6 @@ export const WobbleCard = ({
     form.setValue("contentID",id);
   }, [selectedTags, form]);
 
-
   return (
     <motion.section
       onMouseMove={handleMouseMove}
@@ -154,155 +154,167 @@ export const WobbleCard = ({
       )}
     >
       
-    {link && (
-      <a 
-        target="_blank"  
-        href={link} 
-        rel="noopener noreferrer" 
-        className="absolute top-4 right-28 flex items-center text-white hover:bg-black/30 z-50 bg-black/20 p-2 rounded-full backdrop-blur-sm"
-      >
-        <AiOutlineLink className="w-6 h-6 stroke-current" />
-      </a>
-    )}
+    <div className="relative w-full">
+      <div>
+        {link && (
+          <a 
+            target="_blank"  
+            href={link} 
+            rel="noopener noreferrer" 
+            className="absolute top-4 right-28 flex items-center text-white hover:bg-black/30 z-50 bg-black/20 p-2 rounded-full backdrop-blur-sm"
+          >
+            <AiOutlineLink className="w-6 h-6 stroke-current" />
+          </a>
+        )}
 
-    {id && (
+        {id && (
+              <Dialog>
+                <DialogTrigger asChild>
+                    <Button 
+                    variant={"ghost"}
+                    className="absolute top-4 right-14 flex items-center text-white z-50 bg-black/20 p-2 rounded-full backdrop-blur-sm"
+                    startIcon={<AiOutlineEdit className="w-6 h-6 stroke-current" />}
+                  />
+                </DialogTrigger>
+                <DialogContent className="md:max-w-[500px] sm:max-w-[425px] max-w-[300px] rounded-xl">
+                  <form onSubmit={form.handleSubmit(editContentOnSubmitHandler,editContentOnErrorHandler)}>
+                    <DialogHeader>
+                          <DialogTitle>
+                            Edit Content
+                          </DialogTitle>
+                          <DialogDescription>
+                            Time for a tweak! Let's polish that nugget of wisdom to perfection.
+                          </DialogDescription>
+                      </DialogHeader>
+
+                      <div className="grid gap-4 py-4">
+                          {/* Title */}
+                          <div className="grid grid-cols-4 items-center gap-2">
+                            <Label htmlFor="title" className="text-left">
+                              Title
+                            </Label>
+                            <Input id="title" {...form.register("title")} className="col-span-3" />
+                          </div>
+
+                          {/* Link */}
+                          <div className="grid grid-cols-4 items-center gap-2">
+                            <Label htmlFor="link" className="text-left">
+                              Link
+                            </Label>
+                            <Input id="link" {...form.register("link")} className="col-span-3" />
+                          </div>
+
+                          {/* Type */}
+                          <div className="grid grid-cols-4 items-center gap-2">
+                            <Label htmlFor="type" className="text-left">
+                              Type
+                            </Label>
+                            <Controller
+                              name="type"
+                              control={form.control}
+                              render={({ field }) => (
+                                <Select onValueChange={field.onChange} value={field.value}>
+                                  <SelectTrigger className="md:w-[410px] sm:w-[280px] w-[205px]">
+                                    <SelectValue placeholder="Select the type of data" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectGroup>
+                                      <SelectLabel>Content Type</SelectLabel>
+                                      <SelectItem value="text">Text</SelectItem>
+                                      <SelectItem value="audio">Audio</SelectItem>
+                                      <SelectItem value="image">Image</SelectItem>
+                                      <SelectItem value="video">Video</SelectItem>
+                                    </SelectGroup>
+                                  </SelectContent>
+                                </Select>
+                              )}
+                            />
+                          </div>
+
+                          {/* Tags */}
+                          <div className="grid grid-cols-4 items-center gap-2">
+                            <Label htmlFor="tags" className="text-left">
+                              Tags
+                            </Label>
+                            <div className="col-span-3">
+                              <FancyMultiSelect
+                                selected={selectedTags}
+                                setSelected={setSelectedTags}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        {/* Footer */}
+                        <DialogFooter className="flex justify-center">
+                            <Button
+                              variant={"primary"}
+                              text={"Edit Content"}
+                              type="submit"
+                            />
+                            <DialogClose asChild>
+                              <Button
+                                variant={"ghostDark"}
+                                text={"Cancel"}
+                              />
+                            </DialogClose>
+                        </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+        )}
+
+        {id && (
           <Dialog>
             <DialogTrigger asChild>
                 <Button 
-                variant={"ghost"}
-                className="absolute top-4 right-14 flex items-center text-white z-50 bg-black/20 p-2 rounded-full backdrop-blur-sm"
-                startIcon={<AiOutlineEdit className="w-6 h-6 stroke-current" />}
+                  variant={"ghost"}
+                  className="absolute top-4 right-2 flex items-center text-white z-50 bg-black/20 p-2 rounded-full backdrop-blur-sm"
+                  startIcon={<AiOutlineDelete className="w-6 h-6 stroke-current" />}
               />
             </DialogTrigger>
             <DialogContent className="md:max-w-[500px] sm:max-w-[425px] max-w-[300px] rounded-xl">
-              <form onSubmit={form.handleSubmit(editContentOnSubmitHandler,editContentOnErrorHandler)}>
-                <DialogHeader>
-                      <DialogTitle>
-                        Edit Content
-                      </DialogTitle>
-                      <DialogDescription>
-                        Time for a tweak! Let's polish that nugget of wisdom to perfection.
-                      </DialogDescription>
-                  </DialogHeader>
-
-                  <div className="grid gap-4 py-4">
-                      {/* Title */}
-                      <div className="grid grid-cols-4 items-center gap-2">
-                        <Label htmlFor="title" className="text-left">
-                          Title
-                        </Label>
-                        <Input id="title" {...form.register("title")} className="col-span-3" />
-                      </div>
-
-                      {/* Link */}
-                      <div className="grid grid-cols-4 items-center gap-2">
-                        <Label htmlFor="link" className="text-left">
-                          Link
-                        </Label>
-                        <Input id="link" {...form.register("link")} className="col-span-3" />
-                      </div>
-
-                      {/* Type */}
-                      <div className="grid grid-cols-4 items-center gap-2">
-                        <Label htmlFor="type" className="text-left">
-                          Type
-                        </Label>
-                        <Controller
-                          name="type"
-                          control={form.control}
-                          render={({ field }) => (
-                            <Select onValueChange={field.onChange} value={field.value}>
-                              <SelectTrigger className="md:w-[410px] sm:w-[280px] w-[205px]">
-                                <SelectValue placeholder="Select the type of data" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectGroup>
-                                  <SelectLabel>Content Type</SelectLabel>
-                                  <SelectItem value="text">Text</SelectItem>
-                                  <SelectItem value="audio">Audio</SelectItem>
-                                  <SelectItem value="image">Image</SelectItem>
-                                  <SelectItem value="video">Video</SelectItem>
-                                </SelectGroup>
-                              </SelectContent>
-                            </Select>
-                          )}
-                        />
-                      </div>
-
-                      {/* Tags */}
-                      <div className="grid grid-cols-4 items-center gap-2">
-                        <Label htmlFor="tags" className="text-left">
-                          Tags
-                        </Label>
-                        <div className="col-span-3">
-                          <FancyMultiSelect
-                            selected={selectedTags}
-                            setSelected={setSelectedTags}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    {/* Footer */}
-                    <DialogFooter className="flex justify-center">
-                        <Button
-                          variant={"primary"}
-                          text={"Edit Content"}
-                          type="submit"
-                        />
-                        <DialogClose asChild>
-                          <Button
-                            variant={"ghostDark"}
-                            text={"Cancel"}
-                          />
-                        </DialogClose>
-                    </DialogFooter>
-              </form>
+              <DialogHeader>
+                  <DialogTitle>
+                    Are you sure you want to delete this item?
+                  </DialogTitle>
+                  <DialogDescription>
+                    This action is irreversible.
+                  </DialogDescription>
+              </DialogHeader>
+              <div className="flex justify-center">
+                <Button
+                  variant={"destructive"}
+                  text={"Delete"}
+                  onClick={()=>{
+                    deleteFunction(id)
+                  }}
+                />
+                <DialogClose asChild>
+                  <Button
+                    variant={"ghostDark"}
+                    text={"Cancel"}
+                  />
+                </DialogClose>
+                </div>
             </DialogContent>
           </Dialog>
-    )}
+        )}
+      </div>
+      
 
-    {id && (
-      <Dialog>
-        <DialogTrigger asChild>
-            <Button 
-            variant={"ghost"}
-            className="absolute top-4 right-2 flex items-center text-white z-50 bg-black/20 p-2 rounded-full backdrop-blur-sm"
-            startIcon={<AiOutlineDelete className="w-6 h-6 stroke-current" />}
-          />
-        </DialogTrigger>
-        <DialogContent className="md:max-w-[500px] sm:max-w-[425px] max-w-[300px] rounded-xl">
-          <DialogHeader>
-              <DialogTitle>
-                Are you sure you want to delete this item?
-              </DialogTitle>
-              <DialogDescription>
-                This action is irreversible.
-              </DialogDescription>
-          </DialogHeader>
-          <div className="flex justify-center">
-            <Button
-              variant={"destructive"}
-              text={"Delete"}
-              onClick={()=>{
-                deleteFunction(id)
+      {title && (
+          <h2 className="absolute top-4 left-4 max-w-80 flex items-center text-left text-balance text-base lg:text-xl md:text-md text-xl font-semibold tracking-[-0.015em] text-white break-words pr-32"
+              style={{
+                  maxWidth: `calc(100%)`, 
+                  wordBreak: 'break-word', 
               }}
-            />
-            <DialogClose asChild>
-              <Button
-                variant={"ghostDark"}
-                text={"Cancel"}
-              />
-            </DialogClose>
-            </div>
-        </DialogContent>
-      </Dialog>
-    )}
-
-    {title && (
-        <h2 className="absolute top-4 left-4 max-w-80 flex items-center text-left text-balance text-base lg:text-xl md:text-md sm:text-l font-semibold tracking-[-0.015em] text-white">
-          {title}
-        </h2>
-    )}
+          >
+              {title}
+      </h2>
+      
+      )}
+    </div>
+    
 
     <div
       className="relative h-full [background-image:radial-gradient(88%_100%_at_top,rgba(255,255,255,0.5),rgba(255,255,255,0))] sm:mx-0 sm:rounded-2xl overflow-hidden"

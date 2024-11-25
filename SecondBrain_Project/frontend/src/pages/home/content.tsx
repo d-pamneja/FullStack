@@ -182,7 +182,9 @@ export function EntryCard({ id,title, link, type, tags,removeContent }: { id : s
                 tags={tagsArray}
                 deleteFunction={removeContent}
             >
-                <LinkPreview url={link} />
+                <div className="my-10">
+                  <LinkPreview url={link} />
+                </div>
 
                 <p className="mt-4 max-w-[26rem] text-left text-base/6 text-neutral-200" >
                     <Badge variant="secondary" onClick={()=>{

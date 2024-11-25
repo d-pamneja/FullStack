@@ -80,11 +80,10 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
 
     const isSmall = useMediaQuery({maxWidth : 639})
     const isMedium = useMediaQuery({minWidth: 640, maxWidth : 1023})
+    const size = isSmall ? "sm" : isMedium ? "md" : "lg"
     
     const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
     
-
-    const size = isSmall ? "sm" : isMedium ? "md" : "lg"
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       defaultValues: {
