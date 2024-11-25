@@ -70,7 +70,7 @@ export const WobbleCard = ({
         <DialogTrigger asChild>
             <Button 
             variant={"ghost"}
-            className="absolute top-4 right-4 flex items-center text-white hover:bg-black/30 z-50 bg-black/20 p-2 rounded-full backdrop-blur-sm"
+            className="absolute top-4 right-4 flex items-center text-white z-50 bg-black/20 p-2 rounded-full backdrop-blur-sm"
             startIcon={<AiOutlineDelete className="w-6 h-6 stroke-current" />}
           />
         </DialogTrigger>
