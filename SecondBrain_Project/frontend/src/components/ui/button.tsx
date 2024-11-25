@@ -60,7 +60,9 @@ export const ButtonStyles = cva(
                 primary : ["bg-purple-600","hover:bg-purple-900","text-white"],
                 secondary : ["bg-purple-300","hover:bg-purple-700","text-purple-500"],
                 outline: ["border","border-input","bg-background","shadow-sm","hover:bg-accent","hover:text-accent-foreground"],
-                ghost: ["hover:bg-accent","hover:text-accent-foreground"]
+                ghost: ["hover:bg-accent","hover:text-accent-foreground"],
+                ghostDark: ["bg-black","text-white","hover:bg-transparent","shadow-sm","hover:text-current","hover:border","hover:border-black"],
+                destructive: ["border-transparent","bg-destructive","text-destructive-foreground","shadow-sm","hover:bg-destructive/90"],
             },
             size : { // Different types of size types (for button and span elements inside that button)
                 sm : ["rounded-xl","px-2","py-1","mx-2","shadow-xl"],

@@ -111,3 +111,15 @@ export const addContent = async (
     const data = await res.data;
     return data;
 }
+
+export const deleteContent = async (
+    contentID : string
+) => {
+    const res = await axios.delete("/content/deleteContent",{data : {contentID}})
+    if(res.status != 200){
+        throw new Error("Unable to delete")
+    }
+
+    const data = await res.data;
+    return data
+}

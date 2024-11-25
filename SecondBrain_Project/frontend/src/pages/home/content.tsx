@@ -10,9 +10,10 @@ import {
 } from "../../components/ui/pagination";
 import { WobbleCard } from "../../components/ui/card";
 import { useAuth } from "@/context/AuthContext";
-import { viewContent } from "@/helpers/communicator";
+import { deleteContent, viewContent } from "@/helpers/communicator";
 import { Badge } from "@/components/ui/badge";
 import LinkPreview from "@/components/ui/linkPreview";
+import toast from "react-hot-toast";
 
 export function CardStack() {
     const {isLoggedIn} = useAuth()
@@ -26,6 +27,7 @@ export function CardStack() {
       tags : string[]
     }
   
+    // View and Display Content
     const fetchContent = async () : Promise<ContentValues[]> => {
       if(isLoggedIn){
         const res = await viewContent()
@@ -48,7 +50,27 @@ export function CardStack() {
   
       loadContent();
     }, []);
-  
+
+    // Delete Content
+    const removeContent = async (id : string) : Promise<any> =>{
+      if(isLoggedIn){
+        try{
+          const res = await deleteContent(id)
+          if(res){
+            toast.success("Content Deleted Successfully",{ id: 'deleteContent' })
+            setTimeout(() => {
+                window.location.reload();
+              }, 1000);
+            }
+        }
+        catch(error : any){
+          if(error.status===400 || error.status===403 ){
+            console.log(error)
+            return toast.error(`Could not delete the content : ${error.response.data.message} `, { id: 'deleteContent' });
+          }
+        }
+      }
+    }
   
     // Pages
     const itemsPerPage = 6;
@@ -73,6 +95,7 @@ export function CardStack() {
               link={card.link} 
               type={card.type} 
               tags={card.tags.map((tag) => tag)}
+              removeContent={removeContent}
             />
           ))}
         </div>
@@ -123,14 +146,15 @@ export function CardStack() {
     );
 }
   
-export function EntryCard({ id,title, link, type, tags }: { id : string,title: string; link: string; type: string; tags: string[] }) {
+export function EntryCard({ id,title, link, type, tags,removeContent }: { id : string,title: string; link: string; type: string; tags: string[],removeContent:(id:string)=>Promise<any>}) {
     return (
         <div className="max-w-8xl mx-auto md:w-full w-4/5">
             <WobbleCard
-                containerClassName="md:min-h-[350px] min-h-[400px] md:max-h-[350px] max-h-[400px] flex flex-col justify-between z-0"
+                containerClassName="flex flex-col justify-between z-0"
                 id = {id}
                 title={title}
                 link={link}
+                deleteFunction={removeContent}
             >
                 <LinkPreview url={link} />
 

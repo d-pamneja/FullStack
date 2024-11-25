@@ -107,7 +107,7 @@ export const deleteContent = async (req : Request, res:Response) : Promise<any> 
             })
 
             if(!response){
-                res.status(403).json({message : "You are trying to delete "})
+                res.status(403).json({message : "You are trying to delete content which is not yours."})
             }
 
             return res.status(200).json({message : "Content deleted successfully"})

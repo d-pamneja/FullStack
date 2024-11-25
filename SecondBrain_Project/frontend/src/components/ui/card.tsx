@@ -5,21 +5,24 @@ import { AiOutlineLink } from "react-icons/ai";
 import { AiOutlineDelete } from "react-icons/ai";
 import { cn } from "@/lib/utils";
 import Button from "./button";
+import { Dialog, DialogTrigger,DialogContent, DialogHeader, DialogTitle,DialogDescription,DialogClose} from "./dialog";
 
 export const WobbleCard = ({
   children,
   containerClassName,
   className, 
+  id,
   title,
   link,
-  id
+  deleteFunction
 }: {
   children: React.ReactNode;
   containerClassName?: string;
   className?: string;
   id? : string,
   title : string,
-  link? : string
+  link? : string,
+  deleteFunction : (id : string)=> Promise<any>
 }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
@@ -63,11 +66,40 @@ export const WobbleCard = ({
     )}
 
     {id && (
-      <Button 
-        variant={"ghost"}
-        className="absolute top-4 right-4 flex items-center text-white hover:bg-black/30 z-50 bg-black/20 p-2 rounded-full backdrop-blur-sm"
-        startIcon={<AiOutlineDelete className="w-6 h-6 stroke-current" />}
-      />
+      <Dialog>
+        <DialogTrigger asChild>
+            <Button 
+            variant={"ghost"}
+            className="absolute top-4 right-4 flex items-center text-white hover:bg-black/30 z-50 bg-black/20 p-2 rounded-full backdrop-blur-sm"
+            startIcon={<AiOutlineDelete className="w-6 h-6 stroke-current" />}
+          />
+        </DialogTrigger>
+        <DialogContent className="md:max-w-[500px] sm:max-w-[425px] max-w-[300px] rounded-xl">
+          <DialogHeader>
+              <DialogTitle>
+                Are you sure you want to delete this item?
+              </DialogTitle>
+              <DialogDescription>
+                This action is irreversible.
+              </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center">
+            <Button
+              variant={"destructive"}
+              text={"Delete"}
+              onClick={()=>{
+                deleteFunction(id)
+              }}
+            />
+            <DialogClose asChild>
+              <Button
+                variant={"ghostDark"}
+                text={"Cancel"}
+              />
+            </DialogClose>
+            </div>
+        </DialogContent>
+      </Dialog>
     )}
 
     {title && (
