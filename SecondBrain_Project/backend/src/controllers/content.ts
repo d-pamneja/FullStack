@@ -92,6 +92,66 @@ export const viewContent = async (req : Request, res:Response) : Promise<any> =>
     }
 }
 
+export const editContent = async (req : Request, res:Response) : Promise<any> =>{
+    try{
+        // @ts-ignore 
+        const userID = new mongoose.Types.ObjectId(`${res.locals.jwtData}`)
+        const requestBody = req.body
+        const title = requestBody.title
+        const link = requestBody.link
+        const type = requestBody.type
+        const tags = requestBody.tags
+        console.log(requestBody.contentID)
+
+        tags.map(async (tag : {value : string})=>{
+            const response = await TagModel.findOne({
+                title : tag.value
+            })
+
+            if(!response){
+                await TagModel.create({
+                    title : tag.value
+                })
+            }
+        })
+
+        
+        let tagsArray : string[] = []
+
+        await Promise.all( // Since map function does not wait for any async functions, it pushes before fetching from mongoDB, hence we use Promise All, which ensures all promises are ensured before moving to next line
+            tags.map(async (tag : {value : string})=>{
+                tagsArray.push(tag.value!)
+            })
+        )
+
+
+        if(requestBody){
+            const response = await ContentModel.findOneAndUpdate({
+                _id : new mongoose.Types.ObjectId(`${requestBody.contentID}`),
+                userID : userID
+            },{
+                title : title,
+                link : link,
+                type : type,
+                tags : tagsArray,
+                userID : userID
+            })
+
+            if(!response){
+                res.status(403).json({message : "You are trying to update content which is not yours."})
+            }
+
+            return res.status(200).json({message : "Content updated successfully"})
+        }
+        else{
+            res.status(400).json({message : "Content could not be updated."})
+        }
+    }
+    catch(error : any){
+        res.status(500).json({message : `Error in adding new content ${error.message}`})
+    }
+}
+
 export const deleteContent = async (req : Request, res:Response) : Promise<any> =>{
     try{
         // @ts-ignore 
@@ -121,4 +181,4 @@ export const deleteContent = async (req : Request, res:Response) : Promise<any> 
     }
 }
 
-export default {getAllTags,addContent,viewContent,deleteContent}
+export default {getAllTags,addContent,viewContent,editContent,deleteContent}

@@ -112,12 +112,30 @@ export const addContent = async (
     return data;
 }
 
+export const editContent = async (
+    contentID : string,
+    title : string,
+    link : string,
+    type : string,
+    tags : Array<{value : string}>
+)=>{
+    const res = await axios.put("/content/updateContent",{contentID,title, link,type,tags});
+    if(res.status != 200){
+        throw new Error("Unable to Update content.")
+    }
+    
+    const data = await res.data;
+    return data;
+}
+
+
+
 export const deleteContent = async (
     contentID : string
 ) => {
     const res = await axios.delete("/content/deleteContent",{data : {contentID}})
     if(res.status != 200){
-        throw new Error("Unable to delete")
+        throw new Error("Unable to Delete content")
     }
 
     const data = await res.data;

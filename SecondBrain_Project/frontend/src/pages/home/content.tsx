@@ -12,13 +12,14 @@ import { WobbleCard } from "../../components/ui/card";
 import { useAuth } from "@/context/AuthContext";
 import { deleteContent, viewContent } from "@/helpers/communicator";
 import { Badge } from "@/components/ui/badge";
+import type { Tag } from "@/components/ui/multi-select";
 import LinkPreview from "@/components/ui/linkPreview";
 import toast from "react-hot-toast";
 
 export function CardStack() {
     const {isLoggedIn} = useAuth()
   
-    // Content
+    // Content (Frontend Display Type)
     type ContentValues = {
       _id : string,
       title : string,
@@ -50,6 +51,27 @@ export function CardStack() {
   
       loadContent();
     }, []);
+
+    // // Edit Content
+    // const updateContent = async (id : string) : Promise<any> =>{
+    //   if(isLoggedIn){
+    //     try{
+    //       const res = await editContent(id)
+    //       if(res){
+    //         toast.success("Content Deleted Successfully",{ id: 'deleteContent' })
+    //         setTimeout(() => {
+    //             window.location.reload();
+    //           }, 1000);
+    //         }
+    //     }
+    //     catch(error : any){
+    //       if(error.status===400 || error.status===403 ){
+    //         console.log(error)
+    //         return toast.error(`Could not delete the content : ${error.response.data.message} `, { id: 'deleteContent' });
+    //       }
+    //     }
+    //   }
+    // }
 
     // Delete Content
     const removeContent = async (id : string) : Promise<any> =>{
@@ -147,13 +169,17 @@ export function CardStack() {
 }
   
 export function EntryCard({ id,title, link, type, tags,removeContent }: { id : string,title: string; link: string; type: string; tags: string[],removeContent:(id:string)=>Promise<any>}) {
-    return (
+  const tagsArray: Tag[] = tags.map((tag) => ({ value: tag }));
+
+  return (
         <div className="max-w-8xl mx-auto md:w-full w-4/5">
             <WobbleCard
                 containerClassName="flex flex-col justify-between z-0"
                 id = {id}
                 title={title}
                 link={link}
+                type={type}
+                tags={tagsArray}
                 deleteFunction={removeContent}
             >
                 <LinkPreview url={link} />
