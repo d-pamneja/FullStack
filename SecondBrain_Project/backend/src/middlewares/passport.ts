@@ -1,4 +1,4 @@
-import { Strategy as GoogleStrategy, Profile } from 'passport-google-oauth20';
+import { Strategy, Profile } from 'passport-google-oauth20';
 import { UserModel } from '../db/model';
 import passport from 'passport';
 import bcrypt from 'bcrypt'
@@ -9,7 +9,7 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 
 
 passport.use(
-    new GoogleStrategy(
+    new Strategy(
       {
         clientID: process.env.GOOGLE_CLIENT_ID || '',
         clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
