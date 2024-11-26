@@ -7,14 +7,14 @@ dotenv.config()
 const JWT_SECRET = process.env.JWT_SECRET
 import { COOKIE_NAME } from "../utils/constants"
 
-const googleRouter = Router();
+const thridPartyRouter = Router();
 
-googleRouter.get(
+thridPartyRouter.get(
   '/google',
   passport.authenticate('google', { scope: ['profile'] })
 );
 
-googleRouter.get(
+thridPartyRouter.get(
     '/google/callback',
     passport.authenticate('google', { failureRedirect: '/' }),
     async (req: Request, res: Response) => {
@@ -55,6 +55,6 @@ googleRouter.get(
   );
   
 
-googleRouter.get('/logout', logout);
+thridPartyRouter.get('/logout', logout);
 
-export default googleRouter;
+export default thridPartyRouter;

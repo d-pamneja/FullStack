@@ -18,14 +18,14 @@ passport.use(
       async (accessToken, refreshToken, profile, done) => {
         try {
             let user = await UserModel.findOne({ username: profile.displayName });
-            const hashedPassword = await bcrypt.hash('GOOGLE_PASSWORD',5)
 
             if (!user) {
-                user = new UserModel({
-                    username: profile.displayName,
-                    password: hashedPassword
-                });
-                await user.save();
+              const hashedPassword = await bcrypt.hash('GOOGLE_PASSWORD',5)
+              user = new UserModel({
+                  username: profile.displayName,
+                  password: hashedPassword
+              });
+              await user.save();
             }
     
             return done(null, user );
