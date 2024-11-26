@@ -52,27 +52,6 @@ export function CardStack() {
       loadContent();
     }, []);
 
-    // // Edit Content
-    // const updateContent = async (id : string) : Promise<any> =>{
-    //   if(isLoggedIn){
-    //     try{
-    //       const res = await editContent(id)
-    //       if(res){
-    //         toast.success("Content Deleted Successfully",{ id: 'deleteContent' })
-    //         setTimeout(() => {
-    //             window.location.reload();
-    //           }, 1000);
-    //         }
-    //     }
-    //     catch(error : any){
-    //       if(error.status===400 || error.status===403 ){
-    //         console.log(error)
-    //         return toast.error(`Could not delete the content : ${error.response.data.message} `, { id: 'deleteContent' });
-    //       }
-    //     }
-    //   }
-    // }
-
     // Delete Content
     const removeContent = async (id : string) : Promise<any> =>{
       if(isLoggedIn){
@@ -123,47 +102,50 @@ export function CardStack() {
         </div>
   
         {/* Pagination */}
-        <Pagination className="mt-8">
-          <PaginationContent>
-            {/* Previous Page */}
-            <PaginationItem>
-              <PaginationPrevious
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleChangePage(Math.max(1, currentPage - 1));
-                }}
-              />
-            </PaginationItem>
-  
-            {/* Page Numbers */}
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <PaginationItem key={page}>
-                <PaginationLink
+        {content[0] && (
+          <Pagination className="mt-8">
+            <PaginationContent>
+              {/* Previous Page */}
+              <PaginationItem>
+                <PaginationPrevious
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    handleChangePage(page);
+                    handleChangePage(Math.max(1, currentPage - 1));
                   }}
-                  isActive={currentPage === page}
-                >
-                  {page}
-                </PaginationLink>
+                />
               </PaginationItem>
-            ))}
-  
-            {/* Next Page */}
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleChangePage(Math.min(totalPages, currentPage + 1));
-                }}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+    
+              {/* Page Numbers */}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <PaginationItem key={page}>
+                  <PaginationLink
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleChangePage(page);
+                    }}
+                    isActive={currentPage === page}
+                  >
+                    {page}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+    
+              {/* Next Page */}
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleChangePage(Math.min(totalPages, currentPage + 1));
+                  }}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
+        
       </div>
     );
 }

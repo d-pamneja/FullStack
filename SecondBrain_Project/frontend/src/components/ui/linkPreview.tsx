@@ -66,6 +66,13 @@ const LinkPreview = ({ url }: { url: string }) => {
                     />
                 </div>
             )}
+            {!previewData.image?.url && (
+                <div className="relative aspect-[16/9] bg-white/10 rounded-lg flex justify-center items-center"> 
+                    <div className='text-white text-center'>
+                      {previewData.description}
+                    </div>
+                </div>
+            )}
         </div>
   );
 };
