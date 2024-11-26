@@ -39,6 +39,7 @@ export const WobbleCard = ({
   children,
   containerClassName,
   className, 
+  isAuth,
   id,
   title,
   link,
@@ -46,15 +47,16 @@ export const WobbleCard = ({
   tags,
   deleteFunction
 }: {
-  children: React.ReactNode;
-  containerClassName?: string;
-  className?: string;
+  children: React.ReactNode
+  containerClassName?: string
+  className?: string
+  isAuth : boolean
   id : string,
   title : string,
   link : string,
   type : string,
   tags : Tag[],
-  deleteFunction : (id : string)=> Promise<any>
+  deleteFunction? : (id : string)=> Promise<any>
 }) => {
   const {isLoggedIn} = useAuth()
 
@@ -134,6 +136,8 @@ export const WobbleCard = ({
     form.setValue("contentID",id);
   }, [selectedTags, form]);
 
+  const linkButtonPos = isAuth ? "110px" : "20px"
+
   return (
     <motion.section
       onMouseMove={handleMouseMove}
@@ -161,13 +165,15 @@ export const WobbleCard = ({
             target="_blank"  
             href={link} 
             rel="noopener noreferrer" 
-            className="absolute top-4 right-28 flex items-center text-white hover:bg-black/30 z-50 bg-black/20 p-2 rounded-full backdrop-blur-sm"
+            className="absolute top-4 flex items-center text-white hover:bg-black/30 z-50 bg-black/20 p-2 rounded-full backdrop-blur-sm"
+            style={{right : linkButtonPos}}
           >
             <AiOutlineLink className="w-6 h-6 stroke-current" />
           </a>
         )}
 
-        {id && (
+        {/* EDIT BUTTON - ONLY AUTHROIZED USER WILL BE ALLOWED */}
+        {id && isAuth && (
               <Dialog>
                 <DialogTrigger asChild>
                     <Button 
@@ -263,7 +269,8 @@ export const WobbleCard = ({
               </Dialog>
         )}
 
-        {id && (
+        {/* DELETE BUTTON - ONLY AUTHROIZED USER WILL BE ALLOWED */}
+        {id && isAuth &&(
           <Dialog>
             <DialogTrigger asChild>
                 <Button 
@@ -286,7 +293,7 @@ export const WobbleCard = ({
                   variant={"destructive"}
                   text={"Delete"}
                   onClick={()=>{
-                    deleteFunction(id)
+                    deleteFunction!(id)
                   }}
                 />
                 <DialogClose asChild>

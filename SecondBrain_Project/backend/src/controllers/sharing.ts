@@ -45,7 +45,7 @@ export const shareLink = async (req : Request, res: Response) : Promise<any> => 
 
             
                 const encodedToken = Buffer.from(shareToken).toString('base64url'); // URL-safe encoding 
-                const link = `http://127.0.0.1:5173/share/viewBrain/${username}/${encodedToken}`;
+                const link = `http://localhost:5173/share/viewBrain/${username}/${encodedToken}`;
 
                 
                 await LinkModel.create({
@@ -93,17 +93,17 @@ export const viewLink = async (req : Request, res: Response) : Promise<any> => {
             // @ts-ignore 
             const linkAccess = decodedLink.share
 
-            const LinkResponse = await LinkModel.find({
+            const LinkResponse = await LinkModel.findOne({
                 userID : requestUserID
             })
 
-            if(LinkResponse && linkAccess===true){
+            if(LinkResponse){
                 const contentResponse = await ContentModel.find({
                     // @ts-ignore 
                     userID : requestUserID
                 })
                 if(contentResponse){
-                    res.status(200).json({message : "Access to this brain has been granted.",contentResponse})
+                    res.status(200).json({message : "Access to this brain has been granted.",contentResponse,LinkResponse})
                 }
             }
             else{

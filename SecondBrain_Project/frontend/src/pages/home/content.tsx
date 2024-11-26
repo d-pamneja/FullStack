@@ -157,6 +157,7 @@ export function EntryCard({ id,title, link, type, tags,removeContent }: { id : s
         <div className="max-w-8xl mx-auto md:w-full w-4/5">
             <WobbleCard
                 containerClassName="flex flex-col justify-between z-0"
+                isAuth={true}
                 id = {id}
                 title={title}
                 link={link}

@@ -1,8 +1,9 @@
-import Home from "@/pages/home/home"
-import Login from "@/pages/login/login"
-import SignUp from "@/pages/signup/signup"
-import NotFound from "@/pages/notfound/notFound"
-import Landing from "@/pages/landing/landing"
+import Home from "@/pages/home/page"
+import Login from "@/pages/login/page"
+import SignUp from "@/pages/signup/page"
+import NotFound from "@/pages/notfound/page"
+import Landing from "@/pages/landing/page"
+import View from "@/pages/externalView/page"
 
 export const nav = [
     {
@@ -16,6 +17,9 @@ export const nav = [
     },
     {
         path : "*", name : "Not Found", element : <NotFound/>, isRestricted : false
+    },
+    {
+        path : "/share/viewBrain/:username/:uid", name : "External", element : <View/>, isRestricted : false
     },
     {
         path : "/", name : "Landing", element : <Landing/>, isRestricted : false

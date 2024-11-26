@@ -163,3 +163,13 @@ export const shareBrain = async (
     const data = await res.data;
     return data
 }
+
+export const viewBrain = async (username: string, uid: string) => {
+    const res = await axios.get(`/share/viewBrain/${username}/${uid}`)
+    if(res.status != 200 && res.status != 201){
+        throw new Error("Unable to view shared brain.")
+    }
+
+    const data = await res.data;
+    return data
+}
