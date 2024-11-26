@@ -145,7 +145,7 @@ export function EntryCard({ id,title, link, type, tags,description }: { id : str
 
                 {description && (
                   <div 
-                    className="flex items-center text-left text-balance text-base"
+                    className="flex items-center text-left text-balance text-base text-white"
                     style={{
                       maxWidth: `calc(100%)`, 
                       wordBreak: 'break-word', 
