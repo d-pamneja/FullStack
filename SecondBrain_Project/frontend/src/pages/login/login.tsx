@@ -8,7 +8,8 @@ import { toast } from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import {Input,PasswordInput} from '@/components/ui/input';
-import {GoogleSignInButton} from "@/components/ui/googleSignInButton";
+import {GoogleButton} from "@/components/ui/googleButton";
+import { GithubButton } from "@/components/ui/githubButton";
 import {
   Form,
   FormControl,
@@ -95,7 +96,7 @@ const Login = () => {
 
   return (
     <div className="flex justify-center items-center md:h-[600px] h-screen">
-      <div className='flex flex-col items-center justify-center border border-gray-300 rounded-xl shadow-[-10px_-10px_30px_4px_rgba(0,0,0,0.1),_10px_10px_30px_4px_rgba(45,78,255,0.15)] md:w-1/2 w-4/5'>
+      <div className='flex flex-col items-center justify-center border border-gray-300 rounded-xl shadow-[5px_5px_rgba(80,_70,_227,_0.4),_10px_10px_rgba(80,_70,_227,_0.3),_15px_15px_rgba(80,_70,_227,_0.2),_20px_20px_rgba(80,_70,_227,_0.1),_25px_25px_rgba(80,_70,_227,_0.05)] md:w-1/2 w-4/5'>
           <Typography 
             variant='h3' 
             textAlign="center" 
@@ -138,7 +139,8 @@ const Login = () => {
               <SubmitButton className="justify-center"/>
             </form>
           </Form>
-          <GoogleSignInButton />
+          <GoogleButton text="Google Login"/>
+          <GithubButton text="Github Login"/>
       </div>
     </div>
     

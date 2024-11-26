@@ -2,8 +2,11 @@ import { Button } from "./button"
 import { FcGoogle } from "react-icons/fc"; 
 import { useMediaQuery } from "react-responsive";
 
-  
-export const GoogleSignInButton = () => {
+interface GoogleButtonProps {
+  text: string;
+}
+
+export const GoogleButton = ({ text }: GoogleButtonProps) => {
   const isSmall = useMediaQuery({maxWidth : 639})
   const isMedium = useMediaQuery({minWidth: 640, maxWidth : 1023})
 
@@ -14,11 +17,11 @@ export const GoogleSignInButton = () => {
   };
 
   return (
-    <div className="flex justify-center mb-8">
+    <div className="flex justify-center mb-4">
         <Button
             variant="outline"
             size={size}
-            text="Google Login"
+            text={text}
             startIcon={<FcGoogle />} 
             onClick={handleGoogleSignIn} 
         />
@@ -26,4 +29,4 @@ export const GoogleSignInButton = () => {
   );
 };
 
-export default {GoogleSignInButton};
+export default {GoogleButton};
