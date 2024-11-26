@@ -1,11 +1,26 @@
 import { Request,Response,NextFunction } from "express";
-import { ContentModel, LinkModel } from "../db/model";
+import { ContentModel, LinkModel, UserModel } from "../db/model";
 import mongoose from "mongoose";
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv'; 
 dotenv.config()
 const JWT_SECRET = process.env.JWT_SECRET
 
+export const linkStatus = async (req : Request, res: Response) : Promise<any> => {
+    try{
+            // @ts-ignore
+            const userID = new mongoose.Types.ObjectId(`${res.locals.jwtData}`)
+
+            const linkCheck = await LinkModel.find({
+                userID : userID
+            })
+
+            return res.status(200).json({message : `Sharing link status for ${userID} fetched `,linkStatus : linkCheck[0] ? true : false,linkCheck})        
+    }
+    catch(error : any){
+        res.status(500).json({message : `Error in sharing dashboard ${error.message}`})
+    }
+}
 
 export const shareLink = async (req : Request, res: Response) : Promise<any> => {
     try{
@@ -17,6 +32,12 @@ export const shareLink = async (req : Request, res: Response) : Promise<any> => 
                 // @ts-ignore
                 const userID = new mongoose.Types.ObjectId(`${res.locals.jwtData}`)
 
+                const user = await UserModel.findById(userID)
+                if(!user){
+                    res.status(404).json({message : "User not found."})
+                }
+                const username = user?.username?.replace(/\s+/g, '') || ''; // Remove all spaces just in case it gives display name (google auth user)
+
                 const shareToken = jwt.sign({ 
                     userID : userID,
                     share : setting
@@ -24,7 +45,7 @@ export const shareLink = async (req : Request, res: Response) : Promise<any> => 
 
             
                 const encodedToken = Buffer.from(shareToken).toString('base64url'); // URL-safe encoding 
-                const link = `http://127.0.0.1:3001/share/viewBrain/${encodedToken}`;
+                const link = `http://127.0.0.1:5173/share/viewBrain/${username}/${encodedToken}`;
 
                 
                 await LinkModel.create({
@@ -32,17 +53,23 @@ export const shareLink = async (req : Request, res: Response) : Promise<any> => 
                     userID : userID
                 })
 
-                return res.status(201).json({message : `Sharable link activated for the brain of user ${userID}`,link})
+                return res.status(201).json({message : `Sharable link activated for the brain of user ${username}`,link})
             }
             else{ // Delete if they toggle off the share button
                 // @ts-ignore
                 const userID = new mongoose.Types.ObjectId(`${res.locals.jwtData}`)
+                const user = await UserModel.findById(userID)
+                if(!user){
+                    res.status(404).json({message : "User not found."})
+                }
+                const username = user?.username?.replace(/\s+/g, '') || ''; // Remove all spaces just in case it gives display name (google auth user)
+
 
                 await LinkModel.deleteOne({
                     userID : userID
                 })
 
-                res.status(200).json({message:`Sharable link de-activated for the brain of user ${userID}`})
+                res.status(200).json({message:`Sharable link de-activated for the brain of user ${username}`})
             }
         }
         else{
@@ -50,7 +77,7 @@ export const shareLink = async (req : Request, res: Response) : Promise<any> => 
         }
     }
     catch(error : any){
-        res.status(500).json({message : `Error in adding new content ${error.message}`})
+        res.status(500).json({message : `Error in sharing dashboard ${error.message}`})
     }
 }
 
@@ -80,7 +107,7 @@ export const viewLink = async (req : Request, res: Response) : Promise<any> => {
                 }
             }
             else{
-                res.status(403).json({message : "Access to this brain has been deined."})
+                res.status(403).json({message : "Access to this brain has been denied."})
             }
         }
         else{

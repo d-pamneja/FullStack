@@ -15,7 +15,6 @@ passport.use(
     },
     async (accessToken : string, refreshToken : string, profile : any, done : any) => {
       try {
-        console.log(profile)
           const username = profile.displayName;
           let user = await UserModel.findOne({ username: username });
 

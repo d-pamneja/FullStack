@@ -60,7 +60,7 @@ export const checkAuthStatus = async () => {
     }
   };
 
-
+// Content Functionalities
 export const fetchData = async () =>{
     try{
         const res = await axios.get("/content/viewContent")
@@ -93,7 +93,6 @@ export const viewContent = async ()=>{
     }
 
     const data = await res.data;
-    console.log(data)
     return data;
 }
 
@@ -136,6 +135,29 @@ export const deleteContent = async (
     const res = await axios.delete("/content/deleteContent",{data : {contentID}})
     if(res.status != 200){
         throw new Error("Unable to Delete content")
+    }
+
+    const data = await res.data;
+    return data
+}
+
+// Sharing Functionalities
+export const linkStatus = async () => {
+    const res = await axios.get("/share/linkStatus")
+    if(res.status != 200){
+        throw new Error("Unable to modify brain sharing status")
+    }
+
+    const data = await res.data;
+    return data
+}
+
+export const shareBrain = async (
+    share : boolean
+) => {
+    const res = await axios.post("/share/shareBrain",{share})
+    if(res.status != 200 && res.status != 201){
+        throw new Error("Unable to modify brain sharing status")
     }
 
     const data = await res.data;
