@@ -169,7 +169,7 @@ export function EntryCard({ id,title, link, type, tags,description,removeContent
                   description={description}
                   deleteFunction={removeContent}
               >
-                  <div className="my-10">
+                  <div className="my-20">
                     <LinkPreview url={link} />
                   </div>
 

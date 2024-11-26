@@ -163,6 +163,17 @@ export const WobbleCard = ({
     >
       
     <div className="relative w-full">
+      {title && (
+          <h2 className="absolute top-4 left-4 max-w-80 flex items-center text-left text-balance text-base lg:text-xl md:text-md text-xl font-semibold tracking-[-0.015em] text-white break-words pr-32"
+              style={{
+                  maxWidth: `calc(100% - 40px)`, 
+                  wordBreak: 'break-word', 
+              }}
+          >
+              {title}
+      </h2>
+      
+      )}
       <div>
         {link && (
           <a 
@@ -325,19 +336,7 @@ export const WobbleCard = ({
           </Dialog>
         )}
       </div>
-      
-
-      {title && (
-          <h2 className="absolute top-4 left-4 max-w-80 flex items-center text-left text-balance text-base lg:text-xl md:text-md text-xl font-semibold tracking-[-0.015em] text-white break-words pr-32"
-              style={{
-                  maxWidth: `calc(100%)`, 
-                  wordBreak: 'break-word', 
-              }}
-          >
-              {title}
-      </h2>
-      
-      )}
+    
     </div>
     
 
