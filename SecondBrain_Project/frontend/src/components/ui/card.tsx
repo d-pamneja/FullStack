@@ -45,7 +45,8 @@ export const WobbleCard = ({
   link,
   type,
   tags,
-  deleteFunction
+  deleteFunction,
+  description
 }: {
   children: React.ReactNode
   containerClassName?: string
@@ -56,7 +57,8 @@ export const WobbleCard = ({
   link : string,
   type : string,
   tags : Tag[],
-  deleteFunction? : (id : string)=> Promise<any>
+  deleteFunction? : (id : string)=> Promise<any>,
+  description? : string
 }) => {
   const {isLoggedIn} = useAuth()
 
@@ -76,6 +78,7 @@ export const WobbleCard = ({
   const formSchema = z.object({
     contentID : z.string(),
     title: z.string().min(1, "Kindly enter a valid title."),
+    description : z.string().optional(),
     link: z.string().url({ message: "Invalid URL" }),
     type: z.string().refine((type)=>["text","audio","image","video"].includes(type),"Select a valid type."),
     tags : z.array(z.object({
@@ -86,10 +89,10 @@ export const WobbleCard = ({
   type FormValues = z.infer<typeof formSchema>;
   
   const editContentOnSubmitHandler: SubmitHandler<FormValues> = async (data) => {
-    const { contentID,title, link, type, tags } = data;
+    const { contentID,title, link, type, tags,description } = data;
     try {
       if(isLoggedIn){
-        const res = await editContent(contentID,title,link,type,tags)
+        const res = description ? await editContent(contentID,title,link,type,tags,description) : await editContent(contentID,title,link,type,tags)
         if (res) {
           toast.success('Content Modified Successfully', { id: 'editContent' });
           setTimeout(() => {
@@ -126,7 +129,8 @@ export const WobbleCard = ({
       contentID : id,
       title: title,
       link: link,
-      type: type
+      type: type,
+      description : description ? description : undefined
     },
   });
 
@@ -182,7 +186,7 @@ export const WobbleCard = ({
                     startIcon={<AiOutlineEdit className="w-6 h-6 stroke-current" />}
                   />
                 </DialogTrigger>
-                <DialogContent className="md:max-w-[500px] sm:max-w-[425px] max-w-[300px] rounded-xl">
+                <DialogContent className="md:max-w-[600px] sm:max-w-[425px] max-w-[325px] rounded-xl">
                   <form onSubmit={form.handleSubmit(editContentOnSubmitHandler,editContentOnErrorHandler)}>
                     <DialogHeader>
                           <DialogTitle>
@@ -235,6 +239,20 @@ export const WobbleCard = ({
                                 </Select>
                               )}
                             />
+                          </div>
+
+                          {/* Description */}
+                          <div className="grid grid-cols-4 items-center gap-2">
+                            <Label 
+                              htmlFor="description" 
+                              className="text-left" 
+                              style={{
+                                maxWidth: `calc(100%)`, 
+                                wordBreak: 'break-word', 
+                            }}>
+                              Description
+                            </Label>
+                            <Input id="description" {...form.register("description")} className="col-span-3" />
                           </div>
 
                           {/* Tags */}

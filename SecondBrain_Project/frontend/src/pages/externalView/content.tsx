@@ -21,6 +21,7 @@ type ContentValues = {
     link: string;
     type: string;
     tags: string[];
+    description? : string
   };
 
 interface CardStackProps {
@@ -48,12 +49,13 @@ const CardStack: React.FC<CardStackProps> = ({ content, access }) => {
                 <div className="grid md:grid-cols-3 grid-cols-1 md:gap-4 gap-6">
                 {currentItems.map((card, index) => (
                     <EntryCard 
-                    key={index} 
-                    id = {card._id}
-                    title={card.title} 
-                    link={card.link} 
-                    type={card.type} 
-                    tags={card.tags.map((tag) => tag)}
+                        key={index} 
+                        id = {card._id}
+                        title={card.title} 
+                        link={card.link} 
+                        type={card.type} 
+                        tags={card.tags.map((tag) => tag)}
+                        description={card.description}
                     />
                 ))}
                 </div>
@@ -123,7 +125,7 @@ const CardStack: React.FC<CardStackProps> = ({ content, access }) => {
     );
 }
   
-export function EntryCard({ id,title, link, type, tags }: { id : string,title: string; link: string; type: string; tags: string[]}) {
+export function EntryCard({ id,title, link, type, tags,description }: { id : string,title: string; link: string; type: string; tags: string[],description? : string}) {
   const tagsArray: Tag[] = tags.map((tag) => ({ value: tag }));
 
   return (
@@ -140,6 +142,18 @@ export function EntryCard({ id,title, link, type, tags }: { id : string,title: s
                 <div className="my-10">
                   <LinkPreview url={link} />
                 </div>
+
+                {description && (
+                  <div 
+                    className="flex items-center text-left text-balance text-base"
+                    style={{
+                      maxWidth: `calc(100%)`, 
+                      wordBreak: 'break-word', 
+                  }}
+                  >
+                    {description}
+                  </div>
+                )}
 
                 <p className="mt-4 max-w-[26rem] text-left text-base/6 text-neutral-200" >
                     <Badge variant="secondary" onClick={()=>{

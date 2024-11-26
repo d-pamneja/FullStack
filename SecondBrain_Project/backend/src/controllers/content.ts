@@ -21,6 +21,7 @@ export const addContent = async (req:Request, res:Response) : Promise<any> =>{
 
         if(requestBody){
             const title = requestBody.title
+            const description = requestBody.description
             const link = requestBody.link
             const type = requestBody.type
             const tags = requestBody.tags
@@ -52,6 +53,7 @@ export const addContent = async (req:Request, res:Response) : Promise<any> =>{
 
             await ContentModel.create({
                 title : title,
+                description : description? description : null,
                 link : link,
                 type : type,
                 tags : tagsArray,
@@ -98,6 +100,7 @@ export const editContent = async (req : Request, res:Response) : Promise<any> =>
         const userID = new mongoose.Types.ObjectId(`${res.locals.jwtData}`)
         const requestBody = req.body
         const title = requestBody.title
+        const description = requestBody.description
         const link = requestBody.link
         const type = requestBody.type
         const tags = requestBody.tags
@@ -131,6 +134,7 @@ export const editContent = async (req : Request, res:Response) : Promise<any> =>
                 userID : userID
             },{
                 title : title,
+                description : description? description : null,
                 link : link,
                 type : type,
                 tags : tagsArray,

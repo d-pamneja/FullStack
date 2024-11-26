@@ -44,6 +44,7 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
       title: z.string().min(1, "Kindly enter a valid title."),
       link: z.string().url({ message: "Invalid URL" }),
       type: z.string().refine((type)=>["text","audio","image","video"].includes(type),"Select a valid type."),
+      description : z.string().optional(),
       tags : z.array(z.object({
         value : z.string()
       })).nonempty({message : "Kindly enter at least one tag"})
@@ -52,10 +53,10 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
     type ContentFormValues = z.infer<typeof contentFormSchema>;
     
     const addContentOnSubmitHandler: SubmitHandler<ContentFormValues> = async (data) => {
-      const { title, link, type, tags } = data;
+      const { title, link, type, tags,description } = data;
       try {
         if(isLoggedIn){
-          const res = await addContent(title,link,type,tags)
+          const res = description ? await addContent(title,link,type,tags,description) : await addContent(title,link,type,tags)
           if (res) {
             toast.success('Content Added Successfully', { id: 'addContent' });
             setTimeout(() => {
@@ -90,6 +91,7 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
         title: "",
         link: "",
         type: "",
+        description : "",
         tags: [],
       },
     });
@@ -287,6 +289,21 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
                         </Select>
                       )}
                     />
+                  </div>
+
+                  {/* Description */}
+                  <div className="grid grid-cols-4 items-center gap-2">
+                    <Label 
+                      htmlFor="description" 
+                      className="text-left"
+                      style={{
+                        maxWidth: `calc(100%)`, 
+                        wordBreak: 'break-word', 
+                    }}
+                    >
+                      Description
+                    </Label>
+                    <Input id="description" {...contentForm.register("description")} className="col-span-3" />
                   </div>
 
                   {/* Tags */}

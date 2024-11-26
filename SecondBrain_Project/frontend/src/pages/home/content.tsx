@@ -25,7 +25,8 @@ export function CardStack() {
       title : string,
       link : string,
       type : string,
-      tags : string[]
+      tags : string[],
+      description? : string
     }
   
     // View and Display Content
@@ -96,6 +97,7 @@ export function CardStack() {
               link={card.link} 
               type={card.type} 
               tags={card.tags.map((tag) => tag)}
+              description={card.description}
               removeContent={removeContent}
             />
           ))}
@@ -150,38 +152,83 @@ export function CardStack() {
     );
 }
   
-export function EntryCard({ id,title, link, type, tags,removeContent }: { id : string,title: string; link: string; type: string; tags: string[],removeContent:(id:string)=>Promise<any>}) {
+export function EntryCard({ id,title, link, type, tags,description,removeContent }: { id : string,title: string; link: string; type: string; tags: string[],description? : string, removeContent:(id:string)=>Promise<any>}) {
   const tagsArray: Tag[] = tags.map((tag) => ({ value: tag }));
 
   return (
         <div className="max-w-8xl mx-auto md:w-full w-4/5">
-            <WobbleCard
-                containerClassName="flex flex-col justify-between z-0"
-                isAuth={true}
-                id = {id}
-                title={title}
-                link={link}
-                type={type}
-                tags={tagsArray}
-                deleteFunction={removeContent}
-            >
-                <div className="my-10">
-                  <LinkPreview url={link} />
-                </div>
+            {description && (
+                <WobbleCard
+                  containerClassName="flex flex-col justify-between z-0"
+                  isAuth={true}
+                  id = {id}
+                  title={title}
+                  link={link}
+                  type={type}
+                  tags={tagsArray}
+                  description={description}
+                  deleteFunction={removeContent}
+              >
+                  <div className="my-10">
+                    <LinkPreview url={link} />
+                  </div>
 
-                <p className="mt-4 max-w-[26rem] text-left text-base/6 text-neutral-200" >
-                    <Badge variant="secondary" onClick={()=>{
-                        console.log("Clicked")
-                    }}>
-                        {type}
-                    </Badge>
-                </p>
-                <p className="mt-4 max-w-[26rem] text-left text-base/6 text-neutral-200">  
-                    {tags.map((tag) => (
-                        <Badge className="mx-1 mb-1" key={tag} variant="default">{tag}</Badge>
-                    ))}
-                </p>
-            </WobbleCard>
+                  {description && (
+                    <div 
+                      className="flex items-center text-left text-balance text-base text-white"
+                      style={{
+                        maxWidth: `calc(100%)`, 
+                        wordBreak: 'break-word', 
+                    }}
+                    >
+                      {description}
+                    </div>
+                  )}
+
+                  <p className="mt-4 max-w-[26rem] text-left text-base/6 text-neutral-200" >
+                      <Badge variant="secondary" onClick={()=>{
+                          console.log("Clicked") // Add funcionality later to make searchable via click
+                      }}>
+                          {type}
+                      </Badge>
+                  </p>
+                  <p className="mt-4 max-w-[26rem] text-left text-base/6 text-neutral-200">  
+                      {tags.map((tag) => (
+                          <Badge className="mx-1 mb-1" key={tag} variant="default">{tag}</Badge> // Add funcionality later to make searchable via click
+                      ))}
+                  </p>
+              </WobbleCard>
+            )}
+
+            {!description && (
+              <WobbleCard
+                  containerClassName="flex flex-col justify-between z-0"
+                  isAuth={true}
+                  id = {id}
+                  title={title}
+                  link={link}
+                  type={type}
+                  tags={tagsArray}
+                  deleteFunction={removeContent}
+              >
+                  <div className="my-10">
+                    <LinkPreview url={link} />
+                  </div>
+
+                  <p className="mt-4 max-w-[26rem] text-left text-base/6 text-neutral-200" >
+                      <Badge variant="secondary" onClick={()=>{
+                          console.log("Clicked") // Add funcionality later to make searchable via click
+                      }}>
+                          {type}
+                      </Badge>
+                  </p>
+                  <p className="mt-4 max-w-[26rem] text-left text-base/6 text-neutral-200">  
+                      {tags.map((tag) => (
+                          <Badge className="mx-1 mb-1" key={tag} variant="default">{tag}</Badge> // Add funcionality later to make searchable via click
+                      ))}
+                  </p>
+              </WobbleCard>
+            )}
         </div>
     );
 }

@@ -100,9 +100,12 @@ export const addContent = async (
     title : string,
     link : string,
     type : string,
-    tags : Array<{value : string}>
+    tags : Array<{value : string}>,
+    description? : string
 )=>{
-    const res = await axios.post("/content/addContent",{title, link,type,tags});
+
+    const res = description ? await axios.post("/content/addContent",{title, description,link,type,tags}) : await axios.post("/content/addContent",{title,link,type,tags})
+    
     if(res.status != 201){
         throw new Error("Unable to Add content.")
     }
@@ -116,9 +119,11 @@ export const editContent = async (
     title : string,
     link : string,
     type : string,
-    tags : Array<{value : string}>
+    tags : Array<{value : string}>,
+    description? : string
 )=>{
-    const res = await axios.put("/content/updateContent",{contentID,title, link,type,tags});
+    const res = description ? await axios.put("/content/updateContent",{contentID,title,link,type,tags,description}) : await axios.put("/content/updateContent",{contentID,title,link,type,tags})
+
     if(res.status != 200){
         throw new Error("Unable to Update content.")
     }
