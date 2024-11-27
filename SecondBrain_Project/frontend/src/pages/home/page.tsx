@@ -7,12 +7,14 @@ import { ButtonDiv } from './mainButtons';
 export function Home() {
 
   return (
-    <div className='flex flex-col w-full'>
+    <div className='flex flex-col w-full my-10'>
       <div className='flex justify-between w-full'>
         <MainSidebar/>
         <div className='flex flex-col w-full space-y-10'>
           <Header/>
-          <CardStack/>
+          <div className='mx-10'>
+            <CardStack/>
+          </div>
         </div>
       </div>
     </div>      

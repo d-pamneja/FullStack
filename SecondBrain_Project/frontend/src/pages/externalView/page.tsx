@@ -36,11 +36,13 @@ export function View() {
   }, [username, uid]);
 
   return (
-    <div className='flex flex-col w-full'>
+    <div className='flex flex-col w-full my-10'>
       <div className='flex justify-between w-full'>
         <div className='flex flex-col w-full space-y-10'>
           {access && (<Header/>)}
-          <CardStack content={content} access={access}/>
+          <div className="mx-10">
+            <CardStack content={content} access={access}/>
+          </div>
         </div>
       </div>
     </div>      
@@ -56,7 +58,7 @@ export function Header(){
         <div className="p-4 text-center font-semibold">
             <p>💡 Welcome to the Idea Playground: Let the Brainwaves Flow! 💡</p>
             <p className="text-sm text-yellow-600 mt-2">
-            Please respect the creativity—sharing and copying here is a no-fly zone!
+            Please respect the creativity — copying here is a no-fly zone!
             </p>
         </div>
     </div>

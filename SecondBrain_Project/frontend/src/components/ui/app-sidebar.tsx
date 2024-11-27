@@ -1,4 +1,4 @@
-import { Home, Search, Settings,Brain, File} from "lucide-react"
+import { Home,Brain, File,BotMessageSquare, LucideFileLineChart} from "lucide-react"
 
 import {
   Sidebar,
@@ -36,15 +36,16 @@ const items = [
     icon: File,
   },
   {
-    title: "Search",
+    title: "Search & Query",
     url: "#",
-    icon: Search,
+    icon: BotMessageSquare,
   },
   {
-    title: "Settings",
+    title: "Analysis",
     url: "#",
-    icon: Settings,
+    icon: LucideFileLineChart,
   },
+  
 ]
 
 export function AppSidebar() {
@@ -92,9 +93,9 @@ export function AppSidebar() {
                     side="top"
                     className="w-[--radix-popper-anchor-width]"
                     >
-                        <DropdownMenuItem>
+                        {/* <DropdownMenuItem>
                             <span>Account</span>
-                        </DropdownMenuItem>
+                        </DropdownMenuItem> */}
                         <DropdownMenuItem>
                             <span>Sign out</span>
                         </DropdownMenuItem>

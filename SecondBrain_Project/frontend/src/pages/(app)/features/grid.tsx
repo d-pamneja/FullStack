@@ -1,4 +1,7 @@
 "use client";
+import AOS from "aos";
+import "aos/dist/aos.css";
+import { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { BentoGrid, BentoGridItem } from "../../../components/ui/bentoGrid";
 import {
@@ -10,20 +13,35 @@ import {
 } from "@tabler/icons-react";
 import { motion } from "framer-motion";
 
+
 export function FeatureGrid() {
+
+  useEffect(() => {
+    AOS.init({
+        duration: 1000,
+        once: true, 
+    });
+  }, []);
+
   return (
-    <BentoGrid className="max-w-4xl mx-auto md:auto-rows-[20rem]">
-        {items.map((item, i) => (
-            <BentoGridItem
-            key={i}
-            title={item.title}
-            description={item.description}
-            header={item.header}
-            className={cn("[&>p:text-lg]", item.className)}
-            icon={item.icon}
-            />
-        ))}
-    </BentoGrid>
+    <div
+        data-aos="flip-up"
+        data-aos-delay={300}
+    >
+        <BentoGrid className="max-w-4xl mx-auto md:auto-rows-[20rem]">
+            {items.map((item, i) => (
+                <BentoGridItem
+                key={i}
+                title={item.title}
+                description={item.description}
+                header={item.header}
+                className={cn("[&>p:text-lg]", item.className)}
+                icon={item.icon}
+                />
+            ))}
+        </BentoGrid>
+    </div>
+    
   );
 }
 
