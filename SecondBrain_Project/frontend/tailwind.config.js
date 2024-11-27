@@ -67,7 +67,23 @@ export default {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+		keyframes: {
+			activateFullBorder: {
+				'0%': { 
+				  clipPath: 'inset(50% 50% 0 50%)', 
+				},
+				'50%': { 
+				  clipPath: 'inset(0 50% 0 50%)', 
+				},
+				'100%': { 
+				  clipPath: 'inset(0 0 0 0)', 
+				},
+			  },
+		},
+		animation: {
+			activateBorder: 'activateFullBorder 0.6s ease-out forwards',
+		},
   	}
   },
   plugins: [require("tailwindcss-animate")],

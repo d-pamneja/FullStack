@@ -2,7 +2,7 @@ import Home from "@/pages/home/page"
 import Login from "@/pages/login/page"
 import SignUp from "@/pages/signup/page"
 import NotFound from "@/pages/notfound/page"
-import Landing from "@/pages/landing/page"
+import Landing from "@/pages/(app)/page"
 import View from "@/pages/externalView/page"
 
 export const nav = [
