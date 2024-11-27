@@ -66,9 +66,9 @@ export const FloatingNav = ({
             key={`link=${idx}`}
             to={navItem.link}
             smooth={true}
-            duration={5000}  
+            duration={200}  
             className={cn(
-              "relative text-neutral-50 items-center flex space-x-1 hover:text-neutral-300 scroll-smooth"
+              "relative text-neutral-50 items-center flex space-x-1 hover:text-neutral-300 scroll-smooth cursor-pointer"
             )}
             color="white"
           >
