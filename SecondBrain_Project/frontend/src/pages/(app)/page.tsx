@@ -4,6 +4,7 @@ import { IntroHeading } from "./intro/introHeading";
 import {motion, useMotionTemplate, useMotionValue,animate, easeInOut} from "framer-motion"
 import { useEffect } from "react";
 import { FeatureGrid } from "./features/grid";
+import Footer from "./footer";
 
 export function Landing(){
     // Intro Section - Auora Effect
@@ -49,6 +50,7 @@ export function Landing(){
             <div id="contact-section" className="h-[1000px] bg-grey-400">
                 Section 3
             </div>
+            <Footer/>
         </div>
     )
 }
