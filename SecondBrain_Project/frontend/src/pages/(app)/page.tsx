@@ -47,9 +47,6 @@ export function Landing(){
             >
                 <FeatureGrid/>
             </div>
-            <div id="stack-section" className="h-[1000px] bg-grey-400">
-                Section 3
-            </div>
             <Footer/>
         </div>
     )
