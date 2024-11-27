@@ -3,6 +3,7 @@ import { IntroCard } from "./intro/introCard"
 import { IntroHeading } from "./intro/introHeading";
 import {motion, useMotionTemplate, useMotionValue,animate, easeInOut} from "framer-motion"
 import { useEffect } from "react";
+import { FeatureGrid } from "./features/grid";
 
 export function Landing(){
     // Intro Section - Auora Effect
@@ -24,7 +25,7 @@ export function Landing(){
             <Navbar/>
             <motion.section 
                 id="intro-section" 
-                className="flex justify-between items-center bg-black md:flex-row flex-col min-h-screen"
+                className="flex justify-between items-center md:flex-row flex-col min-h-screen"
                 style={{
                     backgroundImage
                 }}
@@ -35,8 +36,15 @@ export function Landing(){
                 />
             </motion.section>
             
-            <div id="feature-section" className="h-[1000px] bg-grey-200">
-                Section 2
+            <div 
+                id="feature-section" 
+                className="min-h-screen"
+                style={{
+                    backgroundImage : 'linear-gradient(135deg, #f5f7fa, #e4ebf0)',
+                    padding: '4rem 1rem'
+                }}
+            >
+                <FeatureGrid/>
             </div>
             <div id="contact-section" className="h-[1000px] bg-grey-400">
                 Section 3
