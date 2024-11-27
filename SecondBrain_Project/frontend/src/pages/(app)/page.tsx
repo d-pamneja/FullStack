@@ -8,9 +8,9 @@ import Footer from "./footer";
 
 export function Landing(){
     // Intro Section - Auora Effect
-    const COLORS = ["#13FFAA","#1E67C6","#CE84CF","#DD335C"]
+    const COLORS = ["#867ff0","#5b52de","#4035de","#2214e3"]
     const color = useMotionValue(COLORS[0])
-    const backgroundImage = useMotionTemplate`radial-gradient(125% 125% at 50% 0%,white 20%,${color})`
+    const backgroundImage = useMotionTemplate`radial-gradient(120% 120% at 50% 0%,white 15%,${color})`
 
     useEffect(()=>{
         animate(color,COLORS,{
@@ -47,7 +47,7 @@ export function Landing(){
             >
                 <FeatureGrid/>
             </div>
-            <div id="contact-section" className="h-[1000px] bg-grey-400">
+            <div id="stack-section" className="h-[1000px] bg-grey-400">
                 Section 3
             </div>
             <Footer/>

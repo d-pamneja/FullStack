@@ -15,8 +15,8 @@ export function Navbar() {
       icon: <BrainCircuitIcon className="h-4 w-4 text-white hover:text-neutral-300" />,
     },
     {
-      name: "Contact",
-      link: "contact-section",
+      name: "Stack",
+      link: "stack-section",
       icon: (
         <Twitter className="h-4 w-4 text-white hover:text-neutral-300" />
       ),
