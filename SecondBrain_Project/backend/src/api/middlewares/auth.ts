@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv'; 
 dotenv.config()
 const JWT_SECRET = process.env.JWT_SECRET
-import { COOKIE_NAME } from '../utils/constants';
+import { COOKIE_NAME } from '../../utils/constants';
 
 export const auth =  (
     req : Request, 
@@ -11,7 +11,7 @@ export const auth =  (
     next : NextFunction
 ) =>{
     try{
-        const requestAuthorization = req.signedCookies[`${COOKIE_NAME}`];
+        const requestAuthorization = req.signedCookies[`${COOKIE_NAME}`]
         const decodedInfo = jwt.verify(requestAuthorization as any,JWT_SECRET as any)
 
         if(!decodedInfo){

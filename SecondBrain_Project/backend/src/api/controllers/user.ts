@@ -1,11 +1,11 @@
-import { UserModel} from '../db/model'
+import { UserModel} from '../../db/model'
 import { Request,Response,NextFunction } from 'express';
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv'; 
 dotenv.config()
 const JWT_SECRET = process.env.JWT_SECRET
-import { COOKIE_NAME } from "../utils/constants"
+import { COOKIE_NAME } from "../../utils/constants"
 
 
 
@@ -76,12 +76,12 @@ export const login = async function(
             const expires = new Date(Date.now() + expiresInMilliseconds);
 
             res.cookie(COOKIE_NAME, token, {
-                path: "/",
-                domain: "localhost",
+                domain: "100x-brainly-backend.vercel.app",
                 expires,
                 httpOnly: true,
                 signed: true,
-                secure : true
+                secure: true,
+                sameSite : "none"
             });
 
             return res.status(200).json({message:`${username} has been successfully logged in.`,id:response._id.toString()})

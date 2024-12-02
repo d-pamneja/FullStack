@@ -1,5 +1,5 @@
 import { Request,Response,NextFunction } from "express";
-import { ContentModel, LinkModel, UserModel } from "../db/model";
+import { ContentModel, LinkModel, UserModel } from "../../db/model";
 import mongoose from "mongoose";
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv'; 
@@ -45,7 +45,7 @@ export const shareLink = async (req : Request, res: Response) : Promise<any> => 
 
             
                 const encodedToken = Buffer.from(shareToken).toString('base64url'); // URL-safe encoding 
-                const link = `http://localhost:5173/share/viewBrain/${username}/${encodedToken}`;
+                const link = `https://100x-brainly.vercel.app/share/viewBrain/${username}/${encodedToken}`;
 
                 
                 await LinkModel.create({

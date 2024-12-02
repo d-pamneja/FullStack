@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv'; 
 dotenv.config()
 const JWT_SECRET = process.env.JWT_SECRET
-import { COOKIE_NAME } from "../utils/constants"
+import { COOKIE_NAME } from "../../utils/constants"
 
 const thridPartyRouter = Router();
 
@@ -39,15 +39,15 @@ thridPartyRouter.get(
       const expires = new Date(Date.now() + expiresInMilliseconds);
 
       res.cookie(COOKIE_NAME, token, {
-          path: "/",
-          domain: "localhost",
+          domain: "100x-brainly-backend.vercel.app",
           expires,
           httpOnly: true,
           signed: true,
-          secure : true
+          secure: true,
+          sameSite : "none"
       });
 
-      res.redirect('http://localhost:5173/home');
+      res.redirect('https://100x-brainly.vercel.app/home');
     } catch (error) {
       console.error('Google callback error:', error);
       res.status(500).json({ message: 'Internal server error.' });
@@ -85,15 +85,15 @@ thridPartyRouter.get(
       const expires = new Date(Date.now() + expiresInMilliseconds);
 
       res.cookie(COOKIE_NAME, token, {
-          path: "/",
-          domain: "localhost",
+          domain: "100x-brainly-backend.vercel.app",
           expires,
           httpOnly: true,
           signed: true,
-          secure : true
+          secure: true,
+          sameSite : "none"
       });
 
-      res.redirect('http://localhost:5173/home');
+      res.redirect('https://100x-brainly.vercel.app/home');
     } catch (error) {
       console.error('Github callback error:', error);
       res.status(500).json({ message: 'Internal server error.' });
