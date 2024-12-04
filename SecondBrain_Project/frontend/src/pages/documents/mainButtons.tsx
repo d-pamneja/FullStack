@@ -33,6 +33,7 @@ import { IoMdDocument} from "react-icons/io";
 import { addContent } from "@/helpers/communicator";
 import { ConvexProvider, useMutation } from 'convex/react';
 import { api } from "../../../convex/_generated/api"
+import { addDocument, deleteDocument, viewDocument } from "../../helpers/communicator";
 
 
 export const ButtonDiv = ({className} : {className? : string} )=> {
@@ -102,50 +103,141 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
     }, [selectedTags, contentForm]);
     
     // Adding Documents Form and Functionalities
-    const documentFormSchema = z.object({
+
+    // Add Document - AWS
+    const addDocumentFormSchema = z.object({
+      type: z.string().refine((type)=>["text","pdf"].includes(type),"Select a valid type."),
+      filename : z.string(),
+      file : z.any()
+    });
+    
+  type AddDocumentFormValues = z.infer<typeof addDocumentFormSchema>;
+
+  const addDocumentForm = useForm<z.infer<typeof addDocumentFormSchema>>({
+      resolver: zodResolver(addDocumentFormSchema),
+      defaultValues: {
+          filename : "",
+          type : ""
+      },
+  });
+
+    const setDocument : SubmitHandler<AddDocumentFormValues> = async (data)=>{
+      const {type,filename,file} = data
+      const userID = localStorage.getItem("userID")!
+      const contentType = file[0].type
+      const fileObject = file[0]
+      try {
+        const res = await addDocument(userID, type, filename, contentType, fileObject);
+        
+        const AWSData = {
+          title : filename,
+          type : type,
+          key : res
+        }
+
+        return addDocumentConvexOnSubmitHandler(AWSData)
+
+      } catch (error) {
+          console.error("Upload failed on AWS:", error);
+      }
+    }
+
+    // Convex Schema
+    const documentConvexFormSchema = z.object({
         title: z.string().min(1, "Kindly enter a valid title."),
         type: z.string().refine((type)=>["text","pdf"].includes(type),"Select a valid type."),
-        text : z.string().max(500,"Kindly enter a message within the limit").optional()
+        key : z.string()
       });
       
-    type DocumentFormValues = z.infer<typeof documentFormSchema>;
+    type DocumentConvexValues = z.infer<typeof documentConvexFormSchema>;
 
     const createDocument = useMutation(api.document.createDocument)
-    const addDocumentOnSubmitHandler: SubmitHandler<DocumentFormValues> = async (data) => {
+    const addDocumentConvexOnSubmitHandler : SubmitHandler<DocumentConvexValues> = async (data) => {
         try {
-            const { title, type } = data;
-            const res = await createDocument({title : title, type : type})
+            const { title, type,key } = data
+            const userID = localStorage.getItem("userID")!
+            const res = await createDocument({userID : userID, type : type,title : title, key : key})
             if (res) {
                 toast.success('Document Added Successfully', { id: 'addDocument' });
                 setTimeout(() => {
                     window.location.reload();
                 }, 1000);
             }
-           
         } catch (error : any) {
             console.log(error)
             return toast.error(`Could not add the document : ${error} `, { id: 'addDocument' });
         }
     }
 
-    const documentForm = useForm<z.infer<typeof documentFormSchema>>({
-        resolver: zodResolver(documentFormSchema),
-        defaultValues: {
-            title: "",
-            type: "",
-            text : ""
-        },
+  // Fetch Document - AWS
+  const fetchdocumentFormSchema = z.object({
+      key: z.string().min(1, "Kindly enter a valid path to file")
     });
     
+  type FetchDocumentFormValues = z.infer<typeof fetchdocumentFormSchema>;
+
+  const fetchdocumentForm = useForm<z.infer<typeof fetchdocumentFormSchema>>({
+      resolver: zodResolver(fetchdocumentFormSchema),
+      defaultValues: {
+          key : ""
+      },
+  });
     
-    // Button Size Control
-    const isSmall = useMediaQuery({maxWidth : 639})
-    const isMedium = useMediaQuery({minWidth: 640, maxWidth : 1023})
-    const size = isSmall ? "sm" : isMedium ? "md" : "lg"
+
+    const fetchDocument : SubmitHandler<FetchDocumentFormValues> = async (data)=>{
+      const {key} = data
+      const res = await viewDocument(key)
+      console.log(res.url)
+    }
 
     
+
+    // Delete Document - AWS
+    const deletedocumentFormSchema = z.object({
+      key: z.string().min(1, "Kindly enter a valid path to file")
+    });
+    
+  type DeleteDocumentFormValues = z.infer<typeof deletedocumentFormSchema>;
+
+  const deletedocumentForm = useForm<z.infer<typeof deletedocumentFormSchema>>({
+      resolver: zodResolver(deletedocumentFormSchema),
+      defaultValues: {
+          key : ""
+      },
+  });
+
+  const removeDocument : SubmitHandler<DeleteDocumentFormValues> = async (data)=>{
+    const {key} = data
+    const res = await deleteDocument(key)
+    console.log(res)
+  }
+
+
+  // Button Size Control
+  const isSmall = useMediaQuery({maxWidth : 639})
+  const isMedium = useMediaQuery({minWidth: 640, maxWidth : 1023})
+  const size = isSmall ? "sm" : isMedium ? "md" : "lg"
+
     return (
       <div className={cn("flex",className)}>
+        <form className="bg-red-200 my-20 mx-10 py-5" onSubmit={fetchdocumentForm.handleSubmit(fetchDocument,errorHandler)}>
+          <div className="grid grid-cols-4 items-start gap-2">
+              <Label htmlFor="key" className="text-left">
+                Key
+              </Label>
+              <Input id="key" {...fetchdocumentForm.register("key")} className="col-span-3" />
+            </div>
+            <Button size="lg" text={"View Document"} type="submit"></Button>
+        </form>
+        <form className="bg-bluee-200 my-20 mx-10 py-5" onSubmit={deletedocumentForm.handleSubmit(removeDocument,errorHandler)}>
+          <div className="grid grid-cols-4 items-start gap-2">
+              <Label htmlFor="key" className="text-left">
+                Key
+              </Label>
+              <Input id="key" {...deletedocumentForm.register("key")} className="col-span-3" />
+            </div>
+            <Button size="lg" text={"Delete Document"} type="submit"></Button>
+        </form>
         <Dialog>
             <DialogTrigger asChild>
               <Button
@@ -156,7 +248,7 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
               />
             </DialogTrigger>
             <DialogContent className="md:max-w-[600px] sm:max-w-[425px] max-w-[325px] rounded-xl">
-              <form onSubmit={documentForm.handleSubmit(addDocumentOnSubmitHandler,errorHandler)}>
+              <form onSubmit={addDocumentForm.handleSubmit(setDocument,errorHandler)}>
                 <DialogHeader>
                   <DialogTitle>Add Document</DialogTitle>
                   <DialogDescription>
@@ -164,12 +256,12 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
-                  {/* Title */}
+                  {/* Filename */}
                   <div className="grid grid-cols-4 items-center gap-2">
-                    <Label htmlFor="title" className="text-left">
-                      Title
+                    <Label htmlFor="filename" className="text-left">
+                      Title/Filename
                     </Label>
-                    <Input id="title" {...documentForm.register("title")} className="col-span-3" />
+                    <Input id="filename" {...addDocumentForm.register("filename")} className="col-span-3" />
                   </div>
 
                   {/* Type */}
@@ -179,7 +271,7 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
                     </Label>
                     <Controller
                       name="type"
-                      control={documentForm.control}
+                      control={addDocumentForm.control}
                       render={({ field }) => (
                         <Select onValueChange={field.onChange} value={field.value}>
                           <SelectTrigger className="md:w-[410px] sm:w-[280px] w-[205px]">
@@ -197,26 +289,15 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
                     />
                   </div>
 
-                    {/* Conditional Input Box - Text Type */}
-                    {documentForm.watch('type') === 'text' && (
-                    <div className="grid grid-cols-4 items-center gap-2">
-                        <Label htmlFor="textInput" className="text-left">
-                        Text Input
-                        </Label>
-                        <Controller
-                            name="text"
-                            control={documentForm.control}
-                            render={({ field }) => (
-                            <textarea
-                                {...field}
-                                id="text"
-                                placeholder="Enter your text"
-                                className="border border-gray-300 rounded px-2 py-1 md:w-[410px] sm:w-[280px] w-[205px] h-[200px]"
-                            />
-                        )}
-                        />
-                    </div>
-                    )}
+                  {/* File Upload */}
+                  <div className="grid grid-cols-4 items-center gap-2">
+                    <Label htmlFor="file" className="text-left">
+                      File
+                    </Label>
+                    <Input id="file" type="file" {...addDocumentForm.register("file")} className="col-span-3" />
+                  </div>
+                  
+
                 </div>
                 {/* Footer */}
                 <DialogFooter>

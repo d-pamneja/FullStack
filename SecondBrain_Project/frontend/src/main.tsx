@@ -10,7 +10,8 @@ const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL)
 
 import axios from 'axios';
 
-axios.defaults.baseURL = "https://100x-brainly-backend.vercel.app";
+// axios.defaults.baseURL = "https://100x-brainly-backend.vercel.app"; // Production Mode
+axios.defaults.baseURL = "http://localhost:3001"; // Dev Mode
 axios.defaults.withCredentials = true;
 
 createRoot(document.getElementById('root')!).render(

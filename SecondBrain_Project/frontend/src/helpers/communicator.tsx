@@ -178,3 +178,61 @@ export const viewBrain = async (username: string, uid: string) => {
     const data = await res.data;
     return data
 }
+
+// Storage Functionalities
+export const viewDocument = async (key : string) => {
+    const res = await axios.get(`/store/getObject`,{
+        params : {
+            key : key
+        }
+    })
+    if(res.status != 200){
+        throw new Error("Unable to fetch the given item.")
+    }
+
+    const data = await res.data;
+    return data
+}
+
+
+export const addDocument = async (userID : string, type : string, filename : string, contentType : string, fileObject : File) => {
+    const res = await axios.post(`/store/setObject`,{
+        userID, type, filename, contentType, fileObject
+    })
+
+    if(res.status != 200){
+        throw new Error("Unable to get signedURL for given item")
+    }
+    const { url,fullPath } = res.data;
+
+    // // Directly uploading to S3 using the signed URL
+    // const uploadResponse = await fetch(url, {
+    //     method: 'PUT',
+    //     headers: {
+    //         'Content-Type': contentType
+    //     },
+    //     body: fileObject, 
+    // });
+
+    // if (uploadResponse.ok) {
+    //     console.log('File uploaded successfully!');
+    // } else {
+    //     console.error('Failed to upload file:', uploadResponse.statusText);
+    // }
+
+    return fullPath
+}
+
+export const deleteDocument = async (key : string) => {
+    const res = await axios.delete(`/store/removeObject`,{
+        params : {
+            key : key
+        }
+    })
+    if(res.status != 200){
+        throw new Error("Unable to delete the given item.")
+    }
+
+    const data = await res.data;
+    return data
+}
