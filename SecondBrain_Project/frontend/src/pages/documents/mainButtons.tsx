@@ -1,4 +1,4 @@
-import { any, z } from "zod"
+import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { cn } from "../../lib/utils"
 import { useState,useEffect } from "react";
@@ -26,12 +26,12 @@ import {
     SelectTrigger,
     SelectValue,
   } from "@/components/ui/select"
-import { FancyMultiSelect } from "@/components/ui/multi-select";
 import type { Tag } from "@/components/ui/multi-select";
 import { useForm,SubmitHandler,Controller } from "react-hook-form"
 import { IoMdDocument} from "react-icons/io";
 import { addContent } from "@/helpers/communicator";
-import { ConvexProvider, useMutation } from 'convex/react';
+import {Loader2} from "lucide-react"
+import { useMutation } from 'convex/react';
 import { api } from "../../../convex/_generated/api"
 import { addDocument, deleteDocument, viewDocument } from "../../helpers/communicator";
 
@@ -39,38 +39,6 @@ import { addDocument, deleteDocument, viewDocument } from "../../helpers/communi
 export const ButtonDiv = ({className} : {className? : string} )=> {
     const { isLoggedIn } = useAuth()
 
-    // Content Form and Functionalities
-    const contentFormSchema = z.object({
-      title: z.string().min(1, "Kindly enter a valid title."),
-      link: z.string().url({ message: "Invalid URL" }),
-      type: z.string().refine((type)=>["text","audio","image","video"].includes(type),"Select a valid type."),
-      description : z.string().optional(),
-      tags : z.array(z.object({
-        value : z.string()
-      })).nonempty({message : "Kindly enter at least one tag"})
-    });
-    
-    type ContentFormValues = z.infer<typeof contentFormSchema>;
-    
-    const addContentOnSubmitHandler: SubmitHandler<ContentFormValues> = async (data) => {
-      const { title, link, type, tags,description } = data;
-      try {
-        if(isLoggedIn){
-          const res = description ? await addContent(title,link,type,tags,description) : await addContent(title,link,type,tags)
-          if (res) {
-            toast.success('Content Added Successfully', { id: 'addContent' });
-            setTimeout(() => {
-                window.location.reload();
-              }, 1000);
-            }
-          }
-      } catch (error : any){
-        if(error.status===400){
-          console.log(error)
-          return toast.error(`Could not add the content : ${error.response.data.message} `, { id: 'addContent' });
-        }
-      }
-    };
     
     const errorHandler = (errors: any) => {
         console.log(errors)
@@ -83,32 +51,13 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
         toast.error(errorsArray[0]); 
       }
     };
-
-    const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
-    
-    const contentForm = useForm<z.infer<typeof contentFormSchema>>({
-      resolver: zodResolver(contentFormSchema),
-      defaultValues: {
-        title: "",
-        link: "",
-        type: "",
-        description : "",
-        tags: [],
-      },
-    });
-
-    useEffect(() => { // Hook to update values of tags selected
-      // @ts-ignore
-      contentForm.setValue("tags", selectedTags);
-    }, [selectedTags, contentForm]);
     
     // Adding Documents Form and Functionalities
-
     // Add Document - AWS
     const addDocumentFormSchema = z.object({
       type: z.string().refine((type)=>["text","pdf"].includes(type),"Select a valid type."),
       filename : z.string().min(1,"Kindly enter a valid file name"),
-      file : z.any()
+      file: z.instanceof(FileList).refine((fileList)=>fileList.length > 0,"Kindly upload a file"),
     });
     
   type AddDocumentFormValues = z.infer<typeof addDocumentFormSchema>;
@@ -169,50 +118,6 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
         }
     }
 
-  // Fetch Document - AWS
-  const fetchdocumentFormSchema = z.object({
-      key: z.string().min(1, "Kindly enter a valid path to file")
-    });
-    
-  type FetchDocumentFormValues = z.infer<typeof fetchdocumentFormSchema>;
-
-  const fetchdocumentForm = useForm<z.infer<typeof fetchdocumentFormSchema>>({
-      resolver: zodResolver(fetchdocumentFormSchema),
-      defaultValues: {
-          key : ""
-      },
-  });
-    
-
-    const fetchDocument : SubmitHandler<FetchDocumentFormValues> = async (data)=>{
-      const {key} = data
-      const res = await viewDocument(key)
-      console.log(res.url)
-    }
-
-    
-
-    // Delete Document - AWS
-    const deletedocumentFormSchema = z.object({
-      key: z.string().min(1, "Kindly enter a valid path to file")
-    });
-    
-  type DeleteDocumentFormValues = z.infer<typeof deletedocumentFormSchema>;
-
-  const deletedocumentForm = useForm<z.infer<typeof deletedocumentFormSchema>>({
-      resolver: zodResolver(deletedocumentFormSchema),
-      defaultValues: {
-          key : ""
-      },
-  });
-
-  const removeDocument : SubmitHandler<DeleteDocumentFormValues> = async (data)=>{
-    const {key} = data
-    const res = await deleteDocument(key)
-    console.log(res)
-  }
-
-
   // Button Size Control
   const isSmall = useMediaQuery({maxWidth : 639})
   const isMedium = useMediaQuery({minWidth: 640, maxWidth : 1023})
@@ -220,24 +125,6 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
 
     return (
       <div className={cn("flex",className)}>
-        <form className="bg-red-200 my-20 mx-10 py-5" onSubmit={fetchdocumentForm.handleSubmit(fetchDocument,errorHandler)}>
-          <div className="grid grid-cols-4 items-start gap-2">
-              <Label htmlFor="key" className="text-left">
-                Key
-              </Label>
-              <Input id="key" {...fetchdocumentForm.register("key")} className="col-span-3" />
-            </div>
-            <Button size="lg" text={"View Document"} type="submit"></Button>
-        </form>
-        <form className="bg-bluee-200 my-20 mx-10 py-5" onSubmit={deletedocumentForm.handleSubmit(removeDocument,errorHandler)}>
-          <div className="grid grid-cols-4 items-start gap-2">
-              <Label htmlFor="key" className="text-left">
-                Key
-              </Label>
-              <Input id="key" {...deletedocumentForm.register("key")} className="col-span-3" />
-            </div>
-            <Button size="lg" text={"Delete Document"} type="submit"></Button>
-        </form>
         <Dialog>
             <DialogTrigger asChild>
               <Button
@@ -301,7 +188,12 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
                 </div>
                 {/* Footer */}
                 <DialogFooter>
-                  <Button size="lg" text={"Add Document"} type="submit"></Button>
+                  {!addDocumentForm.formState.isSubmitting && (
+                    <Button size="lg" text={"Add Document"} type="submit"></Button>
+                  )}
+                  {addDocumentForm.formState.isSubmitting && (
+                    <Button size="lg" startIcon={<Loader2 className="animate-spin"/>} text={"Uploading"} type="submit"></Button>
+                  )}
                 </DialogFooter>
               </form>
               </DialogContent>

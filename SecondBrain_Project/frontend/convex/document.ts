@@ -8,11 +8,36 @@ export const createDocument = mutation(
             title : v.string(),
             type : v.string(),
             key : v.string(),
+            description : v.optional(v.string()),
             date : v.optional(v.number()),
         },
         handler : async (ctx,args) => {
-            const newDocument = await ctx.db.insert("documents",{userID : args.userID, title : args.title, type : args.type, key : args.key, date : Date.now()})
+            const newDocument = await ctx.db.insert("documents",{userID : args.userID, title : args.title, type : args.type, description : args.description, key : args.key, date : Date.now()})
             return newDocument
+        }
+    }
+)
+
+export const viewAllDocuments = mutation(
+    {
+        args : {
+            userID : v.string()
+        },
+        handler : async (ctx,args) => {
+            const allDocuments = await ctx.db.query("documents").filter((doc)=> doc.eq(doc.field("userID"),args.userID)).order("desc")
+            return allDocuments.collect()
+        }
+    }
+)
+
+export const deleteDocument = mutation(
+    {
+        args : {
+            _id : v.id("documents")
+        },
+        handler : async (ctx,args) =>{
+            const deleteDocument = await ctx.db.delete(args._id)
+            return deleteDocument
         }
     }
 )

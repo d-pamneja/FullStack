@@ -1,6 +1,7 @@
 "use client";
 import { AppSidebar } from '../../components/ui/app-sidebar'
 import { SidebarProvider, SidebarTrigger } from "../../components/ui/sidebar"
+import { DocStack } from './docs';
 import { ButtonDiv } from './mainButtons';
 
 export function DocumentsDashboard() {
@@ -11,6 +12,9 @@ export function DocumentsDashboard() {
         <MainSidebar/>
         <div className='flex flex-col w-full space-y-10'>
           <Header/>
+          <div className='mx-10'>
+            <DocStack/>
+          </div>
         </div>
       </div>
     </div>      
