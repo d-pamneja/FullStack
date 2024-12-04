@@ -1,6 +1,5 @@
 "use client";
 import { useState,useEffect } from "react";
-import { z } from "zod"
 import {
     Pagination,
     PaginationContent,
@@ -173,7 +172,6 @@ export function DocStack() {
   
 export function DocEntryCard({ _id,title,date,type,docKey,description,removeContent } : { _id: Id<"documents">,title: string, date: number, type: string, docKey : string , description? : string, removeContent:(_id: Id<"documents">, docKey: string)=>Promise<any>}) {
 
-    console.log(docKey)
   return (
         <div className="max-w-8xl mx-auto md:w-full w-4/5">
             <DocumentWobbleCard

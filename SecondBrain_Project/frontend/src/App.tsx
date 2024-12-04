@@ -17,7 +17,7 @@ function App() {
               {nav.map((r, i) => {
                   if (!r.isRestricted) {
                     return <Route key={i} path={r.path} element={r.element} />;
-                  } else if (r.name === "Home" || r.name === "Documents Dashboard") {
+                  } else {
                     if(isLoggedIn){
                       return (
                         <Route

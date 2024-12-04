@@ -26,12 +26,12 @@ import { useAuth } from "../../context/AuthContext"
 const items = [
   {
     title: "Home",
-    url: "home",
+    url: "/home",
     icon: Home,
   },
   {
     title: "Documents",
-    url: "documents",
+    url: "/documents",
     icon: File,
   },
   {

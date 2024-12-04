@@ -26,14 +26,12 @@ import {
     SelectTrigger,
     SelectValue,
   } from "@/components/ui/select"
-import type { Tag } from "@/components/ui/multi-select";
 import { useForm,SubmitHandler,Controller } from "react-hook-form"
 import { IoMdDocument} from "react-icons/io";
-import { addContent } from "@/helpers/communicator";
 import {Loader2} from "lucide-react"
 import { useMutation } from 'convex/react';
 import { api } from "../../../convex/_generated/api"
-import { addDocument, deleteDocument, viewDocument } from "../../helpers/communicator";
+import { addDocument } from "../../helpers/communicator";
 
 
 export const ButtonDiv = ({className} : {className? : string} )=> {
@@ -128,7 +126,7 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
         <Dialog>
             <DialogTrigger asChild>
               <Button
-                  variant={"primary"}
+                  variant={"primaryDoc"}
                   size={size}
                   text="Add Documents"
                   startIcon={<IoMdDocument/>}
@@ -189,10 +187,10 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
                 {/* Footer */}
                 <DialogFooter>
                   {!addDocumentForm.formState.isSubmitting && (
-                    <Button size="lg" text={"Add Document"} type="submit"></Button>
+                    <Button variant="primaryDoc" size="lg" text={"Add Document"} type="submit"></Button>
                   )}
                   {addDocumentForm.formState.isSubmitting && (
-                    <Button size="lg" startIcon={<Loader2 className="animate-spin"/>} text={"Uploading"} type="submit"></Button>
+                    <Button variant="primaryDoc" size="lg" startIcon={<Loader2 className="animate-spin"/>} text={"Uploading"} type="submit"></Button>
                   )}
                 </DialogFooter>
               </form>

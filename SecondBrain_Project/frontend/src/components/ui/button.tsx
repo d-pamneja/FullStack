@@ -58,6 +58,7 @@ export const ButtonStyles = cva(
         variants : { // Different types of buttons
             variant : { // Different types of variant types
                 primary : ["bg-purple-600","hover:bg-purple-900","text-white"],
+                primaryDoc : ["bg-violet-600","hover:bg-violet-900","text-white"],
                 secondary : ["bg-purple-300","hover:bg-purple-700","text-purple-500"],
                 outline: ["border","border-input","bg-background","shadow-sm","hover:bg-accent","hover:text-accent-foreground"],
                 ghost: ["hover:bg-accent","hover:text-accent-foreground"],

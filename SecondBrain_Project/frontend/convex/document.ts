@@ -1,4 +1,4 @@
-import {mutation} from "./_generated/server"
+import {mutation, query} from "./_generated/server"
 import {v} from "convex/values"
 
 export const createDocument = mutation(
@@ -14,6 +14,18 @@ export const createDocument = mutation(
         handler : async (ctx,args) => {
             const newDocument = await ctx.db.insert("documents",{userID : args.userID, title : args.title, type : args.type, description : args.description, key : args.key, date : Date.now()})
             return newDocument
+        }
+    }
+)
+
+export const viewDocument = mutation(
+    {
+        args : {
+            _id : v.id("documents")
+        },
+        handler : async(ctx,args) => {
+            const getDocument = await ctx.db.get(args._id)
+            return getDocument
         }
     }
 )

@@ -1,20 +1,21 @@
 "use client";
 import React, { useState,useEffect,useRef } from "react";
 import { motion } from "framer-motion";
-import { AiOutlineDelete} from "react-icons/ai";
+import { AiOutlineDelete,AiOutlineEye} from "react-icons/ai";
 import { cn } from "@/lib/utils";
 import Button from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogClose,
   DialogTrigger
 } from "@/components/ui/dialog"
 import { Id } from "../../../convex/_generated/dataModel";
+import { useNavigate } from "react-router-dom";
+import { EyeIcon } from "lucide-react";
 
 export const DocumentWobbleCard = ({
   children,
@@ -41,6 +42,8 @@ export const DocumentWobbleCard = ({
   deleteFunction? : (_id : Id<"documents">,docKey:string)=> Promise<any>,
   description? : string
 }) => {
+
+  const navigate = useNavigate()
 
   // Card Wobble Effect 
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -69,7 +72,7 @@ export const DocumentWobbleCard = ({
         transition: "transform 0.1s ease-out",
       }}
       className={cn(
-        "mx-auto w-full bg-indigo-800 relative rounded-2xl overflow-hidden",
+        "mx-auto w-full bg-violet-800 relative rounded-2xl overflow-hidden",
         containerClassName
       )}
     >
@@ -86,6 +89,23 @@ export const DocumentWobbleCard = ({
       </h2>
       
       )}
+
+      <div>
+        {/* VIEW BUTTON - ONLY AUTHROIZED USER WILL BE ALLOWED */}
+        {_id && isAuth &&(
+            <Button 
+                variant={"ghost"}
+                className="absolute top-4 right-14 flex items-center text-white z-50 bg-black/20 p-2 rounded-full backdrop-blur-sm"
+                startIcon={<EyeIcon className="w-6 h-6 stroke-current" />}
+                onClick={()=>{
+                    const docID = _id // Just used for resolving easier naming conflict later
+                    const redirect = `./document/${docID}`
+                    navigate(redirect)
+                }}
+            />
+        )}
+      </div>
+
       <div>
         {/* DELETE BUTTON - ONLY AUTHROIZED USER WILL BE ALLOWED */}
         {_id && isAuth &&(

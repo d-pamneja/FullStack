@@ -5,6 +5,7 @@ import NotFound from "@/pages/notfound"
 import Landing from "@/pages/(app)"
 import View from "@/pages/externalView"
 import DocumentsDashboard from "@/pages/documents"
+import DocumentView from "@/pages/documents/document/[docID]"
 
 export const nav = [
     {
@@ -24,6 +25,9 @@ export const nav = [
     },
     {
         path : "/documents", name : "Documents Dashboard", element : <DocumentsDashboard/>, isRestricted : true
+    },
+    {
+        path : "/documents/document/:docID", name : "Document View", element : <DocumentView/>, isRestricted : true
     },
     {
         path : "/", name : "Landing", element : <Landing/>, isRestricted : false
