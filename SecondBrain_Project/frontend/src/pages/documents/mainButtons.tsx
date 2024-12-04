@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { any, z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { cn } from "../../lib/utils"
 import { useState,useEffect } from "react";
@@ -107,7 +107,7 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
     // Add Document - AWS
     const addDocumentFormSchema = z.object({
       type: z.string().refine((type)=>["text","pdf"].includes(type),"Select a valid type."),
-      filename : z.string(),
+      filename : z.string().min(1,"Kindly enter a valid file name"),
       file : z.any()
     });
     
@@ -252,14 +252,14 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
                 <DialogHeader>
                   <DialogTitle>Add Document</DialogTitle>
                   <DialogDescription>
-                    Go ahead and upload that document.
+                    Drop it like it's hot!
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   {/* Filename */}
                   <div className="grid grid-cols-4 items-center gap-2">
                     <Label htmlFor="filename" className="text-left">
-                      Title/Filename
+                      Title
                     </Label>
                     <Input id="filename" {...addDocumentForm.register("filename")} className="col-span-3" />
                   </div>

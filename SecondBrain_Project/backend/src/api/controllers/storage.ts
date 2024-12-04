@@ -92,21 +92,21 @@ export const setObject = async (req: Request, res: Response): Promise<any> => {
         const createObjectCommand = new PutObjectCommand({
             Bucket: BUCKET_NAME,
             Key: fullPath,
-            Body : fileObject,
             ContentType: contentType
         });
 
         await s3Client.send(createObjectCommand)
-        // const url = await getSignedUrl(s3Client, createObjectCommand, { expiresIn: 3600 });
+        const url = await getSignedUrl(s3Client, createObjectCommand, { expiresIn: 3600 });
 
-        // if (!url) {
-        //     return res.status(400).json({ 
-        //         message: "Error generating signed URL for upload" 
-        //     });
-        // }
+        if (!url) {
+            return res.status(400).json({ 
+                message: "Error generating signed URL for upload" 
+            });
+        }
 
         return res.status(200).json({ 
-            message: "File uploaded Successfully", 
+            message: "Signed URL for file set successfully", 
+            url,
             fullPath 
         });
 

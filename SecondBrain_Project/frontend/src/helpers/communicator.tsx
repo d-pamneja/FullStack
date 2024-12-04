@@ -205,20 +205,20 @@ export const addDocument = async (userID : string, type : string, filename : str
     }
     const { url,fullPath } = res.data;
 
-    // // Directly uploading to S3 using the signed URL
-    // const uploadResponse = await fetch(url, {
-    //     method: 'PUT',
-    //     headers: {
-    //         'Content-Type': contentType
-    //     },
-    //     body: fileObject, 
-    // });
+    // Directly uploading to S3 using the signed URL
+    const uploadResponse = await fetch(url, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': contentType
+        },
+        body: fileObject, 
+    });
 
-    // if (uploadResponse.ok) {
-    //     console.log('File uploaded successfully!');
-    // } else {
-    //     console.error('Failed to upload file:', uploadResponse.statusText);
-    // }
+    if (uploadResponse.ok) {
+        console.log('File uploaded successfully!');
+    } else {
+        console.error('Failed to upload file:', uploadResponse.statusText);
+    }
 
     return fullPath
 }
