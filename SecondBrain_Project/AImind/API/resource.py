@@ -1,4 +1,5 @@
 # Importing the dependencies
+from .dependencies import *
 from src.dependencies import *
 from src.query_doc.utils import *
 from src.query_doc.prompts import *
@@ -14,29 +15,29 @@ def home():
     return "Hello from 100xBrainly AI Mind!"
 
 # VectorDB Storage Endpoint
-@app.post("/aimind/storeDoc", response_model=UpsertResponse)
+@app.post("/aimind/storeDoc",response_model = UpsertResponse)
 async def storeDoc(query: StoreDoc = Body(...)):
     """AI Mind endpoint to store a Text/PDF document as pinecone records."""
     try:
         if(validators.url(query.initial_query.file_url)):
-            # Initial document creation and validation
+            # Initial document Creation
             all_documents = load_data(query.initial_query.file_url,query.initial_query.file_type)
-            try:
-                DocumentList.model_validate(all_documents)
-                logging.info("Initial document chunk set.")
-            except ValidationError as e:
-                raise HTTPException(status_code=400, detail=str(e))
-            
-            # Chunked documents creation and validation
+            logging.info("Initial document chunk set.")
+
+            # Chunked documents Creation
             all_chunked_documents = chunk_data(all_documents)
-            try:
-                DocumentList.model_validate(all_chunked_documents)
-                logging.info("Chunked documents set.")
-            except ValidationError as e:
-                raise HTTPException(status_code=400, detail=str(e))
+            logging.info("Chunked documents set.")
             
+            # Pinecone Record Creation
+            vectors = create_vectors(all_chunked_documents,query.doc_info.key,query.doc_info.userID,query.doc_info.type)
+            logging.info("Records list created.")
             
+            # Pinecone Record Upload
+            record_status = upsert_vectors(PINECONE_INDEX_NAME,vectors)
+            final_upload_status = {"response": {"upserted_count": record_status.get('upserted_count', 0)}}
+            logging.info("Records uploaded.")
             
+            return final_upload_status
         else :
             raise HTTPException(status_code=400, detail="Invalid link type")
         

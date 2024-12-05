@@ -18,31 +18,37 @@ def load_data(file_url, file_type):
                 b. page: The page number of the file (will always be 0 for a .txt file)
     """
 
-    response = requests.get(file_url)
-    response.raise_for_status()  
+    try:
+        response = requests.get(file_url)
+        response.raise_for_status()  
 
-    temp_filename = f"temp_check"
+        temp_filename = f"temp_check"
+        
+        extension = ".txt" if file_type == "text" else ".pdf"
+        temp_filepath = f"./{temp_filename}{extension}"
+        
+
+        with open(temp_filepath, "wb") as temp_file:
+            temp_file.write(response.content)
+
+        if file_type == "text":
+            data_loader = TextLoader(temp_filepath)
+            data = data_loader.load()
+            data[0].metadata["page"] = 0
+            return data
+
+        elif file_type == "pdf":
+            data_loader = PyPDFLoader(temp_filepath)
+            data = data_loader.load()
+            return data
+        else:
+            raise ValueError(f"Unsupported file type: {file_type}")
+    finally:
+        if os.path.exists(temp_filepath):
+            os.remove(temp_filepath)
+
     
-    extension = ".txt" if file_type == "text" else ".pdf"
-    temp_filepath = f"{temp_filename}{extension}"
 
-    with open(temp_filepath, "wb") as temp_file:
-        temp_file.write(response.content)
-
-    if file_type == "text":
-        data_loader = TextLoader(temp_filepath)
-        data = data_loader.load()
-        data[0].metadata["page"] = 0
-
-    elif file_type == "pdf":
-        data_loader = PyPDFDirectoryLoader(temp_filepath)
-        data = data_loader.load()
-    else:
-        raise ValueError(f"Unsupported file type: {file_type}")
-
-    os.remove(temp_filepath)
-
-    return data
 
 def chunk_data(data):
     """
@@ -65,6 +71,7 @@ def chunk_data(data):
     except Exception as e:
         raise CustomException(e,sys)
     
+
 def get_embedding(text) :
     """
         Function to convert the text string into embeddings using text-embedding-3-small from OpenAI
@@ -77,7 +84,6 @@ def get_embedding(text) :
     """
     
     try:
-        
         response = embedding_model.create(
             input=text,
             model="text-embedding-3-small"
@@ -148,6 +154,8 @@ def upsert_vectors(index_name,vectors):
         
         upserted_count = record_status.get("upserted_count", len(vectors))
         logging.info(f"Total records upserted successfully: {upserted_count}")
+        
+        return record_status
     
     except Exception as e:
         raise CustomException(e,sys)
@@ -207,10 +215,11 @@ chat = ChatOpenAI(
     openai_api_key = OPENAI_API_KEY
 )
 
-query_chain = LLMChain(
-    llm=chat,
-    prompt=query_prompt
-)
+query_chain = chat | query_prompt
+# query_chain = LLMChain(
+#     llm=chat,
+#     prompt=query_prompt
+# )
 
 
 def get_final_response(user_query,userID,key) : 

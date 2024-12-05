@@ -1,4 +1,4 @@
-from ..src.dependencies import *
+from .dependencies import *
 
 # Data Models for Input and Output
 class StoreDocumentQuery(BaseModel):
@@ -15,6 +15,11 @@ class DocumentList(BaseModel):
 class GetEmbeddings(BaseModel):
     text : str = Field(...,description="The text string which has to be converted to an embedding")
     
+class DocInfo(BaseModel):
+    key : str = Field(...,description="The exact location of the file in AWS cloud")
+    userID : str = Field(...,description="The userID of the user")
+    type: str = Field(..., description="The file type of the document (e.g., 'text' or 'pdf')")
+    
 class Embedding(BaseModel):
     vector : List[float] = Field(...,description="The embedding vector of any gives text chunk")
     
@@ -28,19 +33,16 @@ class PineconeRecord(BaseModel):
 
 class PineconeRecordsList(BaseModel):
     records: List[PineconeRecord] = Field(..., description="A list of Pinecone records to be upserted")
-
-class UpsertPineconeRecords(BaseModel):
-    index_name : str = Field(...,description="The name of the index where the records have to be upserted")
-    vectors : PineconeRecordsList = Field(...,description="An object of PineconeRecordsList")
    
 # Store Document Input Class
 class StoreDoc(BaseModel):
     initial_query : StoreDocumentQuery = Field(...,description="The initial data which contains the the link of document and it's type")
-    
+    doc_info : DocInfo = Field(...,description="The important metadata of the document which will be used in records.")
+
     
 # Store Document Output
 class UpsertResponse(BaseModel):
-    response : Dict[str,Union[str,int]] = Field(...,description="The final confirmation of the number of records upserted in vectorDB")
+    response : Dict[str,int] = Field(...,description="The final confirmation of the number of records upserted in vectorDB")
     
 class GetRelevantDocs(BaseModel):
     query : str = Field(...,description="The text string which has to be converted to an embedding")
