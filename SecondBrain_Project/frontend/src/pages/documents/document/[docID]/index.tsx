@@ -41,6 +41,7 @@ export function DocumentView() {
         const fetchLink = await viewDocument(res.key)
         if(fetchLink){
           setDocLink(fetchLink.url)
+          console.log(docLink) // Debug
         }
         else{
           console.error(`Could not find the AWS Link for given document`)

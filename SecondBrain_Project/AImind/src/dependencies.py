@@ -7,6 +7,17 @@ from pinecone import Pinecone, ServerlessSpec
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate 
 
+from fastapi import FastAPI, Depends, HTTPException, status, Query,Body, APIRouter
+from fastapi.responses import JSONResponse
+from fastapi.security import OAuth2PasswordBearer
+from pydantic import BaseModel, Field, ValidationError
+from typing import List, Union, Dict, Optional
+
+import validators
+import requests
+import os
+import uuid
+
 from .exception import CustomException
 from .logger import logging
 from dotenv import load_dotenv

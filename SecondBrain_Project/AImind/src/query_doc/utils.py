@@ -1,40 +1,49 @@
 from ..dependencies import *
 from .prompts import *
 
-def load_data(file,type):
+def load_data(file_url, file_type):
     """
-        Function to classify the file as either a text or PDF file, and return the finalised
-        collection of documents.
-    
-        Args:
-            file (pdf or txt): The file to be classified, which will be either a .pdf or .txt file
-            
-        Returns:
-            list: A list of documents, where each document contains : 
-                1. page_content : The text document in the given page
-                2. metadata : The information about the file
-                    a. source : The location of the file
-                    b. page: The page number of the file (will always be 0 in a .txt file)
+    Function to classify the file as either a text or PDF file, download it from a given URL,
+    and return the finalised collection of documents.
+
+    Args:
+        file_url (str): The URL of the file to be classified, either a .pdf or .txt file
+        file_type (str): The type of file ('text' or 'pdf')
+
+    Returns:
+        list: A list of documents, where each document contains:
+            1. page_content: The text document in the given page
+            2. metadata: The information about the file
+                a. source: The location of the file
+                b. page: The page number of the file (will always be 0 for a .txt file)
     """
+
+    response = requests.get(file_url)
+    response.raise_for_status()  
+
+    temp_filename = f"temp_check"
     
-    try:
-        if(type=="text"):
-            data_loader = TextLoader(file)
-            data = data_loader.load()
-            
-            data[0].metadata["page"] = 0
-            
-            return data
-        
-        elif(type=="pdf"):
-            data_loader = PyPDFDirectoryLoader(file)
-            data = data_loader.load()
-            
-            return data
-        
-    except Exception as e:
-        raise CustomException(e,sys)
-    
+    extension = ".txt" if file_type == "text" else ".pdf"
+    temp_filepath = f"{temp_filename}{extension}"
+
+    with open(temp_filepath, "wb") as temp_file:
+        temp_file.write(response.content)
+
+    if file_type == "text":
+        data_loader = TextLoader(temp_filepath)
+        data = data_loader.load()
+        data[0].metadata["page"] = 0
+
+    elif file_type == "pdf":
+        data_loader = PyPDFDirectoryLoader(temp_filepath)
+        data = data_loader.load()
+    else:
+        raise ValueError(f"Unsupported file type: {file_type}")
+
+    os.remove(temp_filepath)
+
+    return data
+
 def chunk_data(data):
     """
         Function to break a document collection into chunks of documents, which will make each 
@@ -143,7 +152,6 @@ def upsert_vectors(index_name,vectors):
     except Exception as e:
         raise CustomException(e,sys)
     
-
 def get_relevant_chunks(query,index,userID,key):
     """
         Function to find the most relevant documents from the vectorDB and return the text chunks, it's cosine score and page number
@@ -185,7 +193,6 @@ def get_relevant_chunks(query,index,userID,key):
     
     logging.info(f"Relevant documents in desired format fetched for the query : {query}")
     return relevant_texts
-
 
 # Prompt Template Instance
 query_prompt = PromptTemplate(
