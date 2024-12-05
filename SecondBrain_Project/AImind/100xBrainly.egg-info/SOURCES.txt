@@ -1,0 +1,6 @@
+setup.py
+100xBrainly.egg-info/PKG-INFO
+100xBrainly.egg-info/SOURCES.txt
+100xBrainly.egg-info/dependency_links.txt
+100xBrainly.egg-info/requires.txt
+100xBrainly.egg-info/top_level.txt
