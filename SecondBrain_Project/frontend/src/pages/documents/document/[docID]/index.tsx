@@ -4,13 +4,15 @@ import { api } from "../../../../../convex/_generated/api"
 import { useMutation } from "convex/react"
 import { useNavigate, useParams } from 'react-router-dom';
 import { Id } from "../../../../../convex/_generated/dataModel";
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import { viewDocument } from "../../../../helpers/communicator";
 import Button from "../../../../components/ui/button";
+import { Switch } from "@/components/ui/switch"
 import { useMediaQuery } from "react-responsive";
-import { IoMdArrowBack } from "react-icons/io";
+import { IoMdArrowBack,IoMdChatbubbles } from "react-icons/io";
 import { AppSidebar } from "../../../../components/ui/app-sidebar";
 import { SidebarProvider,SidebarTrigger } from "../../../../components/ui/sidebar";
+import {Input} from "../../../../components/ui/input";
 
 type DocumentValues = {
   _id : Id<"documents">,
@@ -56,6 +58,7 @@ export function DocumentView() {
     fetchDoc(_id)
   },[])
 
+
   return (
     <div className='flex flex-col w-full my-10'>
       <div className='flex justify-between w-full'>
@@ -64,7 +67,7 @@ export function DocumentView() {
           <div className='flex flex-col w-full space-y-10'>
             <Header title={document.title}/>
             <div className='mx-10'>
-              <DocPage document={document!} docLink={docLink}/>
+              <DocPage document={document!} docLink={docLink} />
             </div>
           </div>
         )}
@@ -118,19 +121,50 @@ export function MainSidebar() {
 }
 
 export function DocPage({document,docLink}:{document : DocumentValues,docLink : string}){
+  const isPDF = document.type==="pdf" ? true : false
+  const [chatMode,setChatMode] = useState(false)
+  
   return (
       <main className="space-y-8">
-        <div className="flex gap-12">
-          <div className="bg-slate-700 p-4 rounded flex-1 h-[600px]">
-            <iframe
-              className="w-full h-full"
-              src={docLink}
-            />
+        <div className="flex flex-col gap-6">
+          <div className="flex justify-start items-center gap-2">
+            <div className="font-semibold text-l">
+              Chat Mode
+            </div>
+            <div className="flex justify-center">
+              <Switch
+                checked={chatMode} 
+                onCheckedChange={() => {
+                  setChatMode(!chatMode)
+                }}
+              />
+            </div>
+          </div>
+          <div className="bg-slate-700 p-4 rounded h-[550px]">
+            {!chatMode && (
+                <iframe
+                  className={`w-full h-full rounded ${isPDF ? "" : "bg-white"}`}
+                  src={docLink}
+                />
+            )}
+            
+            {chatMode && (<ChatBox/>)}
           </div>
           
         </div>
         {!document && <h1>Document Not Found</h1>}
       </main>
+  )
+}
+
+export function ChatBox(){
+  
+
+  return (
+    <div className={`flex justify-start rounded bg-indigo-900 w-full h-full text-white`}>
+      Chat Mode
+      
+    </div>
   )
 }
 

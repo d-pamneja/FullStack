@@ -31,7 +31,7 @@ import { IoMdDocument} from "react-icons/io";
 import {Loader2} from "lucide-react"
 import { useMutation } from 'convex/react';
 import { api } from "../../../convex/_generated/api"
-import { addDocument } from "../../helpers/communicator";
+import { addDocument, uploadDocumentPinecone, viewDocument } from "../../helpers/communicator";
 
 
 export const ButtonDiv = ({className} : {className? : string} )=> {
@@ -105,10 +105,17 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
             const userID = localStorage.getItem("userID")!
             const res = await createDocument({userID : userID, type : type,title : title, key : key})
             if (res) {
-                toast.success('Document Added Successfully', { id: 'addDocument' });
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
+                const linkDetails = await viewDocument(key)
+                if(linkDetails){
+                  const link = linkDetails.url
+                  const pineconeUpload = await uploadDocumentPinecone(userID,type,key,link)
+                  if(pineconeUpload){
+                    toast.success('Document Added Successfully', { id: 'addDocument' });
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 1000);
+                  }
+                }
             }
         } catch (error : any) {
             console.log(error)
@@ -137,7 +144,7 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
                 <DialogHeader>
                   <DialogTitle>Add Document</DialogTitle>
                   <DialogDescription>
-                    Drop it like it's hot!
+                    With this, enable your document for AI querying. Drop it like it's hot! 
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">

@@ -223,6 +223,20 @@ export const addDocument = async (userID : string, type : string, filename : str
     return fullPath
 }
 
+export const uploadDocumentPinecone = async (userID : string, type : string, key : string, file_url : string) => {
+    const res = await axios.post(`/store/setObjectPinecone`,{
+        userID, type, key, file_url
+    })
+
+    if(res.status != 200){
+        throw new Error("Unable to get signedURL for given item")
+    }
+
+    const data = await res.data;
+    console.log(data)
+    return data 
+}
+
 export const deleteDocument = async (key : string) => {
     const res = await axios.delete(`/store/removeObject`,{
         params : {

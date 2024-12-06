@@ -4,6 +4,7 @@ import { Upload } from "@aws-sdk/lib-storage";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import dotenv from 'dotenv'; 
 dotenv.config()
+const aiMindURL = process.env.AI_MIND_URL
 
 const s3Client = new S3Client({
     region : 'ap-south-1',
@@ -105,9 +106,9 @@ export const setObject = async (req: Request, res: Response): Promise<any> => {
         }
 
         return res.status(200).json({ 
-            message: "Signed URL for file set successfully", 
+            message: "AWS upload done, signed URL for file set successfully", 
             url,
-            fullPath 
+            fullPath
         });
 
     } catch (error: any) {
@@ -117,6 +118,47 @@ export const setObject = async (req: Request, res: Response): Promise<any> => {
         });
     }
 };
+
+export const setObjectPinecone = async (req : Request, res: Response) : Promise<any> =>{
+    try {
+        const { file_url, type, key,userID } = req.body;
+        
+        const pineconeUpload = await fetch(`${aiMindURL}/storeDoc`,{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json', 
+            },
+            body: JSON.stringify({ 
+                initial_query : {
+                    "file_url" : file_url,
+                    "file_type" : type
+                },
+                doc_info : {
+                    "key" : key,
+                    "userID" : userID,
+                    "type" : type
+                }
+            }),
+        })
+
+        if(!pineconeUpload){
+            res.status(400).json({message:"Pinecone upload not successfully executed"})
+        }
+
+        const output = await pineconeUpload.json();
+
+        return res.status(200).json({ 
+            message: "Pinecone upload of document done", 
+            output
+        });
+
+    } catch (error: any) {
+        console.error(error);
+        res.status(500).json({ 
+            message: `Error in setting object in pinecone: ${error.message}` 
+        });
+    }
+}
 
 export const removeObject = async (req : Request, res: Response) : Promise<any> => {
     try {
