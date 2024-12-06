@@ -1,4 +1,5 @@
 from ..dependencies import *
+from ..logger import *
 from .prompts import *
 
 def load_data(file_url, file_type):
@@ -189,7 +190,7 @@ def get_relevant_chunks(query,index,userID,key):
         }
     )
     
-    logging.info(f"Results fetched from the vectorDB from the index : {index}")
+    logging.info(f"Results fetched from the vectorDB from the index : {PINECONE_INDEX_NAME}")
     
     relevant_texts = []
     for record in results['matches']:
@@ -215,11 +216,7 @@ chat = ChatOpenAI(
     openai_api_key = OPENAI_API_KEY
 )
 
-query_chain = chat | query_prompt
-# query_chain = LLMChain(
-#     llm=chat,
-#     prompt=query_prompt
-# )
+query_chain = chat | (lambda x: x)
 
 
 def get_final_response(user_query,userID,key) : 
@@ -235,13 +232,10 @@ def get_final_response(user_query,userID,key) :
             text : A final string which gives the response of the query from the document
     """
     
-    docs = get_relevant_chunks(user_query,userID,key)
+    docs = get_relevant_chunks(user_query,index,userID,key)
+    
+    formatted_prompt = query_prompt.format(query=user_query, documents=str(docs))
+    response = query_chain.invoke(formatted_prompt)
 
-    response = query_chain.invoke({
-        "query": user_query,
-        "documents": docs
-    })
-
-    logging.info(f"Final response generated from the LLM : {response['text']}")
-    return response['text']
-
+    logging.info(f"Final response generated from the LLM : {response.content}")
+    return response.content

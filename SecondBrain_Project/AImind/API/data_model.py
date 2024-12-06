@@ -44,6 +44,7 @@ class StoreDoc(BaseModel):
 class UpsertResponse(BaseModel):
     response : Dict[str,int] = Field(...,description="The final confirmation of the number of records upserted in vectorDB")
     
+# RAG Model
 class GetRelevantDocs(BaseModel):
     query : str = Field(...,description="The text string which has to be converted to an embedding")
     userID : str = Field(...,description="The userID of the user")

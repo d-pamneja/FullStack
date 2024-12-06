@@ -5,7 +5,9 @@ from langchain_openai import ChatOpenAI
 from langchain.chains import LLMChain
 from pinecone import Pinecone, ServerlessSpec
 from langchain.chains import RetrievalQA
-from langchain.prompts import PromptTemplate 
+from langchain.prompts import PromptTemplate
+from langchain_core.prompt_values import PromptValue
+from langchain_core.runnables import RunnablePassthrough
 
 import validators
 import requests
@@ -32,4 +34,5 @@ embedding_model = openAI_client.embeddings
 
 # Pinecone Instances
 pc = Pinecone(api_key = PINECONE_API_KEY, environment = PINECONE_API_ENV)
+index = pc.Index(PINECONE_INDEX_NAME)
 
