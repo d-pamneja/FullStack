@@ -20,6 +20,7 @@ export const Button = ({variant,size,className,...props} : ButtonProps) => { // 
         smNoShadow : "w-4 h-4 mx-0.5",
         md: "w-5 h-5 mx-1", 
         lg: "w-6 h-6 mx-1.5", 
+        xl : "w-[18px] h-[18px] mx-2",
         icon : "w-9 h-9"
     }
     
@@ -70,6 +71,7 @@ export const ButtonStyles = cva(
                 smNoShadow : ["rounded-xl","px-2","py-1","mx-2"],
                 md : ["rounded-2xl","px-3","py-2","mx-3","shadow-xl"],
                 lg : ["rounded-3xl","px-4","py-3","mx-4","shadow-xl"],
+                xl : ["rounded-full","px-6","py-4","mx-6","shadow-2xl"],
                 icon: ["rounded-xl","p-1","mx-2","shadow-xl"]
             },
         },

@@ -16,6 +16,7 @@ import { Id } from "../../../convex/_generated/dataModel"
 import { api } from "../../../convex/_generated/api"
 import { Badge } from "@/components/ui/badge";
 import toast from "react-hot-toast";
+import { deleteDocumentPinecone } from "../../helpers/communicator";
 
 export function DocStack() {
     const {isLoggedIn} = useAuth()
@@ -64,12 +65,18 @@ export function DocStack() {
     },[])
   
     // Delete Content Functionalities
-    // AWS Deletion
+    const [deletionInProgress,setDeletionInProgress] = useState(false)
+    // AWS and Pinecone Deletion
     const removeDocument = async ( _id: Id<"documents">, key : string) : Promise<any> =>{
       if(isLoggedIn){
         try{
+          setDeletionInProgress(true)
           const res = await deleteDocument(key)
+          if(res){
+            await deleteDocumentPinecone(key)
             return deleteConvexDocument(_id)
+          }
+          return deleteConvexDocument(_id)
         }
         catch(error : any){
           console.log(`Delete failed on AWS : ${error}`)
@@ -82,7 +89,7 @@ export function DocStack() {
     const deleteConvexDocument = async (_id : Id<"documents"> ) => {
         try {
             await eraseDocument({_id})
-
+            setDeletionInProgress(false)
             toast.success('Document Deleted Successfully', { id: 'deleteDocument' });
             setTimeout(() => {
                 window.location.reload();
@@ -117,6 +124,7 @@ export function DocStack() {
               docKey={card.key} 
               description={card.description}
               removeContent={removeDocument}
+              deletionInProgress={deletionInProgress}
             />
           ))}
         </div>
@@ -170,7 +178,7 @@ export function DocStack() {
     );
 }
   
-export function DocEntryCard({ _id,title,date,type,docKey,description,removeContent } : { _id: Id<"documents">,title: string, date: number, type: string, docKey : string , description? : string, removeContent:(_id: Id<"documents">, docKey: string)=>Promise<any>}) {
+export function DocEntryCard({ _id,title,date,type,docKey,description,removeContent,deletionInProgress } : { _id: Id<"documents">,title: string, date: number, type: string, docKey : string , description? : string, deletionInProgress:boolean,removeContent:(_id: Id<"documents">, docKey: string)=>Promise<any>}) {
 
   return (
         <div className="max-w-8xl mx-auto md:w-full w-4/5">
@@ -184,6 +192,7 @@ export function DocEntryCard({ _id,title,date,type,docKey,description,removeCont
                 date={date}
                 deleteFunction={removeContent}
                 description={description}
+                deletionInProgress={deletionInProgress}
             >
                 {description && (
                     <div 

@@ -229,11 +229,10 @@ export const uploadDocumentPinecone = async (userID : string, type : string, key
     })
 
     if(res.status != 200){
-        throw new Error("Unable to get signedURL for given item")
+        throw new Error("Unable to upload document on Pinecone")
     }
 
     const data = await res.data;
-    console.log(data)
     return data 
 }
 
@@ -249,4 +248,32 @@ export const deleteDocument = async (key : string) => {
 
     const data = await res.data;
     return data
+}
+
+export const deleteDocumentPinecone = async (key : string) => {
+    const res = await axios.delete(`/store/removeObjectPinecone`,{
+        params : {
+            key : key
+        }
+    })
+    if(res.status != 200){
+        throw new Error("Unable to delete the given item.")
+    }
+
+    const data = await res.data;
+    return data
+}
+
+// Query Functionalities
+export const queryDoc = async (user_query : string,userID : string, key:string) => {
+    const res = await axios.post("/query/document",{
+        user_query,userID,key
+    })
+
+    if(res.status != 200){
+        throw new Error("Unable to fetch answer to user query")
+    }
+
+    const data = await res.data;
+    return data 
 }

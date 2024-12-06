@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dialog"
 import { Id } from "../../../convex/_generated/dataModel";
 import { useNavigate } from "react-router-dom";
-import { EyeIcon } from "lucide-react";
+import { EyeIcon, Loader2 } from "lucide-react";
 
 export const DocumentWobbleCard = ({
   children,
@@ -28,7 +28,8 @@ export const DocumentWobbleCard = ({
   docKey,
   date,
   deleteFunction,
-  description
+  description,
+  deletionInProgress
 }: {
   children: React.ReactNode
   containerClassName?: string
@@ -40,7 +41,8 @@ export const DocumentWobbleCard = ({
   docKey : string,
   date : number,
   deleteFunction? : (_id : Id<"documents">,docKey:string)=> Promise<any>,
-  description? : string
+  description? : string,
+  deletionInProgress : boolean
 }) => {
 
   const navigate = useNavigate()
@@ -127,13 +129,25 @@ export const DocumentWobbleCard = ({
                   </DialogDescription>
               </DialogHeader>
               <div className="flex justify-center">
-                <Button
-                  variant={"destructive"}
-                  text={"Delete"}
-                  onClick={()=>{
-                    deleteFunction!(_id,docKey)
-                  }}
-                />
+                {!deletionInProgress && (
+                  <Button
+                    variant={"destructive"}
+                    text={"Delete"}
+                    onClick={()=>{
+                      deleteFunction!(_id,docKey)
+                    }}
+                  />
+                )}
+                {deletionInProgress && (
+                  <Button
+                    variant={"destructive"}
+                    startIcon={<Loader2 className="animate-spin"/>}
+                    onClick={()=>{
+                      deleteFunction!(_id,docKey)
+                    }}
+                  />
+                )}
+                
                 <DialogClose asChild>
                   <Button
                     variant={"ghostDark"}

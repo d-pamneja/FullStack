@@ -112,6 +112,7 @@ def create_vectors(text_chunks,KEY,USER_ID,DOCUMENT_TYPE):
     try:
         vectors = []
         chunk_num = 0
+        KEY = KEY.replace(" ", "_")
         
         for chunk in text_chunks: 
             page_num = chunk.metadata["page"]
@@ -161,6 +162,22 @@ def upsert_vectors(index_name,vectors):
     except Exception as e:
         raise CustomException(e,sys)
     
+def delete_vectors(key):
+    """
+        Function to delete vectors associated to a given document
+    
+        Args:
+            key : The exact location of the file in AWS cloud, used to match prefix of records
+            
+    """
+    
+    try:
+        res = index.delete([ids for ids in index.list(prefix=key)])
+        return res
+    
+    except Exception as e:
+        raise CustomException(e,sys)
+    
 def get_relevant_chunks(query,index,userID,key):
     """
         Function to find the most relevant documents from the vectorDB and return the text chunks, it's cosine score and page number
@@ -178,6 +195,7 @@ def get_relevant_chunks(query,index,userID,key):
                 3. reference : The page number where this chunk is located
     """
     query_vector = get_embedding(query)
+    key = key.replace(" ", "_")
     
     results = index.query(
         vector = query_vector,
@@ -233,6 +251,7 @@ def get_final_response(user_query,userID,key) :
     """
     
     docs = get_relevant_chunks(user_query,index,userID,key)
+    logging.info(docs)
     
     formatted_prompt = query_prompt.format(query=user_query, documents=str(docs))
     response = query_chain.invoke(formatted_prompt)

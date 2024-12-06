@@ -1,18 +1,24 @@
 "use-client"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { cn } from "../../../../lib/utils";
 import { api } from "../../../../../convex/_generated/api"
 import { useMutation } from "convex/react"
 import { useNavigate, useParams } from 'react-router-dom';
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { SetStateAction, useEffect, useState } from "react";
-import { viewDocument } from "../../../../helpers/communicator";
+import { useForm,SubmitHandler,Controller } from "react-hook-form"
+import { queryDoc, viewDocument } from "../../../../helpers/communicator";
 import Button from "../../../../components/ui/button";
-import { Switch } from "@/components/ui/switch"
+import { Input } from "../../../../components/ui/input";
+import {Switch} from "../../../../components/ui/switch"
 import { useMediaQuery } from "react-responsive";
-import { IoMdArrowBack,IoMdChatbubbles } from "react-icons/io";
+import { IoMdArrowBack } from "react-icons/io";
+import {Loader2} from "lucide-react"
+import { FaArrowUp } from "react-icons/fa"
+import { toast } from 'react-hot-toast';
 import { AppSidebar } from "../../../../components/ui/app-sidebar";
 import { SidebarProvider,SidebarTrigger } from "../../../../components/ui/sidebar";
-import {Input} from "../../../../components/ui/input";
 
 type DocumentValues = {
   _id : Id<"documents">,
@@ -148,7 +154,7 @@ export function DocPage({document,docLink}:{document : DocumentValues,docLink : 
                 />
             )}
             
-            {chatMode && (<ChatBox/>)}
+            {chatMode && (<ChatBox document={document}/>)}
           </div>
           
         </div>
@@ -157,13 +163,64 @@ export function DocPage({document,docLink}:{document : DocumentValues,docLink : 
   )
 }
 
-export function ChatBox(){
+export function ChatBox({document}:{document : DocumentValues}){
+  const querySchema = z.object({
+    user_query : z.string().min(1,"Kindly enter a valid query")
+    });
+    
+  type QueryValues = z.infer<typeof querySchema>;
+
+  const queryForm = useForm<z.infer<typeof querySchema>>({    
+      resolver: zodResolver(querySchema),
+      defaultValues: {
+        user_query : ""
+      },
+  });
+
+  const sendQuery : SubmitHandler<QueryValues> = async (data)=>{ 
+    try{
+      const {user_query} = data
+      const userID = document.userID
+      const key = document.key
+      const res = await queryDoc(user_query,userID,key)
+
+      if (res) {
+        toast.success('Query fetched successfully', { id: 'fetchquery' });
+        console.log(res.output.response)
+      }
+    }
+    catch (error : any) {
+      console.log(error)
+      return toast.error(`Could not fetch the query : ${error} `, { id: 'fetchquery' });
+    }
+  }
   
+
+  const errorHandler = (errors: any) => {
+    console.log(errors)
+    let errorsArray: string[] = [];
+    Object.keys(errors).forEach((field) => {
+      errorsArray.push(errors[field]?.message || "Invalid input");
+    });
+
+    if (errorsArray.length > 0) {
+      toast.error(errorsArray[0]); 
+    }
+  };
 
   return (
     <div className={`flex justify-start rounded bg-indigo-900 w-full h-full text-white`}>
       Chat Mode
-      
+        <form className="flex justify-end items-end my-5 w-full" onSubmit={queryForm.handleSubmit(sendQuery,errorHandler)}>
+            <Input id="user_query" type="user_query" {...queryForm.register("user_query")} className="h-[50px] bg-white text-black" />
+            {!queryForm.formState.isSubmitting && (
+              <Button size={"xl"} startIcon={<FaArrowUp/>} type="submit"></Button>
+            )}
+            {queryForm.formState.isSubmitting && (
+              <Button size={"xl"} startIcon={<Loader2 className="animate-spin"/>} type="submit"></Button>
+            )}
+            
+        </form>
     </div>
   )
 }

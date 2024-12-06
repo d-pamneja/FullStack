@@ -181,5 +181,38 @@ export const removeObject = async (req : Request, res: Response) : Promise<any> 
     }
 }
 
+export const removeObjectPinecone = async (req : Request, res: Response) : Promise<any> =>{
+    try {
+        const key = req.query.key as string
+        
+        const pineconeDeletion = await fetch(`${aiMindURL}/deleteDoc`,{
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json', 
+            },
+            body: JSON.stringify({ 
+                    "key" : key,
+            }),
+        })
 
-export default {getObject,setObject,removeObject}
+        if(!pineconeDeletion){
+            res.status(400).json({message:"Pinecone upload not successfully executed"})
+        }
+
+        const output = await pineconeDeletion.json();
+
+        return res.status(200).json({ 
+            message: "Pinecone deletion of document done", 
+            output
+        });
+
+    } catch (error: any) {
+        console.error(error);
+        res.status(500).json({ 
+            message: `Error in deleting object in pinecone: ${error.message}` 
+        });
+    }
+}
+
+
+export default {getObject,setObject,setObjectPinecone,removeObject,removeObjectPinecone}

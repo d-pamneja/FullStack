@@ -39,7 +39,14 @@ class StoreDoc(BaseModel):
     initial_query : StoreDocumentQuery = Field(...,description="The initial data which contains the the link of document and it's type")
     doc_info : DocInfo = Field(...,description="The important metadata of the document which will be used in records.")
 
+# Delete Document Input Class
+class DeleteDoc(BaseModel):
+    key : str = Field(...,description="The prefix of all ids of the given document")
     
+# Delete Document Output
+class DeleteResponse(BaseModel):
+    response : str = Field(...,description="The final confirmation of the deletion of given records in vectorDB")
+
 # Store Document Output
 class UpsertResponse(BaseModel):
     response : Dict[str,int] = Field(...,description="The final confirmation of the number of records upserted in vectorDB")
