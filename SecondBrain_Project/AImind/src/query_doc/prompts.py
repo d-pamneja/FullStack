@@ -8,6 +8,7 @@ query_prompt_template = """
     \n\n User Query : {query}
     \n\n Documents : {documents}
     
+    You can give the answer in markdown as well, as the output will be intended to be displayed as markdown text with proper formatting.
     MAKE SURE YOU DO NOT ANSWER FROM ANYTHING APART FROM THE DOCUMENTS GIVEN TO YOU. 
 """
 
