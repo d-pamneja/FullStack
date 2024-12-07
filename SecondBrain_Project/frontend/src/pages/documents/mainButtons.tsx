@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { PDFDocument } from 'pdf-lib';
 import { cn } from "../../lib/utils"
-import { useState,useEffect } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Button } from '../../components/ui/button'
 import { Input } from "@/components/ui/input"
@@ -16,8 +16,8 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-  } from "@/components/ui/dialog"
-  import {
+} from "@/components/ui/dialog"
+import {
     Select,
     SelectContent,
     SelectGroup,
@@ -25,16 +25,23 @@ import {
     SelectLabel,
     SelectTrigger,
     SelectValue,
-  } from "@/components/ui/select"
+} from "@/components/ui/select"
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"  
 import { useForm,SubmitHandler,Controller } from "react-hook-form"
-import { IoMdDocument} from "react-icons/io";
+import { IoMdDocument,} from "react-icons/io";
+import { MdBlock } from "react-icons/md"
 import {Loader2} from "lucide-react"
 import { useMutation } from 'convex/react';
 import { api } from "../../../convex/_generated/api"
 import { addDocument, uploadDocumentPinecone, viewDocument } from "../../helpers/communicator";
 
 
-export const ButtonDiv = ({className} : {className? : string} )=> {
+export const ButtonDiv = ({className,limitExceeded} : {className? : string,limitExceeded : boolean} )=> {
     const { isLoggedIn } = useAuth()
 
     
@@ -55,7 +62,33 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
     const addDocumentFormSchema = z.object({
       type: z.string().refine((type)=>["text","pdf"].includes(type),"Select a valid type."),
       filename : z.string().min(1,"Kindly enter a valid file name"),
-      file: z.instanceof(FileList).refine((fileList)=>fileList.length > 0,"Kindly upload a file"),
+      file: z.instanceof(FileList)
+              .refine((fileList)=>fileList.length > 0,"Kindly upload a file")
+              .refine((fileList)=>fileList[0].size < 3 * 1024 * 1024,"Maximum file size limit is 3MB.")
+              .superRefine(async (fileList, ctx) => {
+                const file = fileList[0];
+                console.log(file.type)
+          
+                if (file.type !== "application/pdf") return; // The above processing is only for PDFs
+          
+                const arrayBuffer = await file.arrayBuffer();
+                try {
+                  const pdfDoc = await PDFDocument.load(arrayBuffer);
+                  const pageCount = pdfDoc.getPageCount();
+          
+                  if (pageCount > 10) {
+                    ctx.addIssue({
+                      code: z.ZodIssueCode.custom,
+                      message: "PDF exceeds the maximum page limit of 10.",
+                    });
+                  }
+                } catch (err) {
+                  ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Unable to process the PDF. Please try again.",
+                  });
+                }
+              }),
     });
     
   type AddDocumentFormValues = z.infer<typeof addDocumentFormSchema>;
@@ -73,6 +106,7 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
       const userID = localStorage.getItem("userID")!
       const contentType = file[0].type
       const fileObject = file[0]
+      
       try {
         const res = await addDocument(userID, type, filename, contentType, fileObject);
         
@@ -132,13 +166,32 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
       <div className={cn("flex",className)}>
         <Dialog>
             <DialogTrigger asChild>
-              <Button
-                  variant={"primaryDoc"}
-                  size={size}
-                  text="Add Documents"
-                  startIcon={<IoMdDocument/>}
-              />
+              {!limitExceeded && (
+                <Button
+                    variant={"primaryDoc"}
+                    size={size}
+                    text="Add Documents"
+                    startIcon={<IoMdDocument/>}
+                />
+              )}
             </DialogTrigger>
+            {limitExceeded && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <Button
+                        variant={"destructive"}
+                        size={size}
+                        text="Max Limit Reached"
+                        startIcon={<MdBlock/>}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Only 5 document uploads allowed</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>              
+              )}
             <DialogContent className="md:max-w-[600px] sm:max-w-[425px] max-w-[325px] rounded-xl">
               <form onSubmit={addDocumentForm.handleSubmit(setDocument,errorHandler)}>
                 <DialogHeader>

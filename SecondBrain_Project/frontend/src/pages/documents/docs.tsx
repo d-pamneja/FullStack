@@ -18,51 +18,24 @@ import { Badge } from "@/components/ui/badge";
 import toast from "react-hot-toast";
 import { deleteDocumentPinecone } from "../../helpers/communicator";
 
-export function DocStack() {
+type DocumentValues = {
+  _id : Id<"documents">,
+  userID : string,
+  _creationTime : number,
+  title : string,
+  key : string,
+  type : string,
+  date : number,
+  description? : string
+}
+
+export function DocStack({
+  docsInfo,
+}:{
+  docsInfo : DocumentValues[]
+}) {
     const {isLoggedIn} = useAuth()
-  
-    // Documents (Frontend Display Type)
-    type DocumentValues = {
-      _id : Id<"documents">,
-      userID : string,
-      _creationTime : number,
-      title : string,
-      key : string,
-      type : string,
-      date : number,
-      description? : string
-    }
-
-    // Fetching Documents Form and Functionalities
-    // Convex Schema
-    const [docsInfo,setDocsInfo] = useState<DocumentValues[]> ([])
-
-    const viewAllDocuments = useMutation(api.document.viewAllDocuments)
-    const fetchAllDocsInfo = async (userID : string) : Promise<DocumentValues[]> =>{
-        if(isLoggedIn){
-            const res = await viewAllDocuments({userID : userID})
-            if(res){
-                return res
-            }
-            else{
-                console.log(`Error fetching doc info :  `,res)
-            }
-        }
-        return []
-    }
-
-    useEffect(()=>{
-        const loadDocs = async () => {
-            try {
-              const data = await fetchAllDocsInfo(localStorage.getItem("userID")!);
-              setDocsInfo(data); 
-            } catch (error) {
-              console.error("Error fetching documents:", error); 
-            }
-        };
-      
-        loadDocs();
-    },[])
+    
   
     // Delete Content Functionalities
     const [deletionInProgress,setDeletionInProgress] = useState(false)
