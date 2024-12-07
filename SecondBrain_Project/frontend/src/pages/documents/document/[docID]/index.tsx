@@ -6,15 +6,18 @@ import { api } from "../../../../../convex/_generated/api"
 import { useMutation } from "convex/react"
 import { useNavigate, useParams } from 'react-router-dom';
 import { Id } from "../../../../../convex/_generated/dataModel";
-import { SetStateAction, useEffect, useState } from "react";
-import { useForm,SubmitHandler,Controller } from "react-hook-form"
+import {  useEffect, useRef, useState } from "react";
+import { useForm,SubmitHandler } from "react-hook-form"
 import { queryDoc, viewDocument } from "../../../../helpers/communicator";
 import Button from "../../../../components/ui/button";
 import { Input } from "../../../../components/ui/input";
 import {Switch} from "../../../../components/ui/switch"
 import { useMediaQuery } from "react-responsive";
 import { IoMdArrowBack } from "react-icons/io";
+import { FaUserCircle } from "react-icons/fa"
+import { ChatGptIcon } from "hugeicons-react"
 import {Loader2} from "lucide-react"
+import ReactMarkdown from 'react-markdown'
 import { FaArrowUp } from "react-icons/fa"
 import { toast } from 'react-hot-toast';
 import { AppSidebar } from "../../../../components/ui/app-sidebar";
@@ -129,6 +132,16 @@ export function MainSidebar() {
 export function DocPage({document,docLink}:{document : DocumentValues,docLink : string}){
   const isPDF = document.type==="pdf" ? true : false
   const [chatMode,setChatMode] = useState(false)
+
+  const chatBoxRef = useRef<HTMLDivElement>(null)
+  const [queries,setQueries] = useState<Array<QueryObjects>>([])
+  const [answers,setAnswers] = useState<Array<AnswerObjects>>([])
+
+  useEffect(()=>{
+    if (chatBoxRef.current) {
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+    }
+  },[queries,answers])
   
   return (
       <main className="space-y-8">
@@ -146,7 +159,7 @@ export function DocPage({document,docLink}:{document : DocumentValues,docLink : 
               />
             </div>
           </div>
-          <div className="bg-slate-700 p-4 rounded h-[550px]">
+          <div className="bg-slate-800 p-4 rounded h-[550px]">
             {!chatMode && (
                 <iframe
                   className={`w-full h-full rounded ${isPDF ? "" : "bg-white"}`}
@@ -154,7 +167,16 @@ export function DocPage({document,docLink}:{document : DocumentValues,docLink : 
                 />
             )}
             
-            {chatMode && (<ChatBox document={document}/>)}
+            {chatMode && (
+              <ChatBox 
+                document={document} 
+                chatBoxRef={chatBoxRef}
+                queries={queries}
+                setQueries={setQueries}
+                answers={answers}
+                setAnswers={setAnswers}
+              />
+            )}
           </div>
           
         </div>
@@ -163,7 +185,47 @@ export function DocPage({document,docLink}:{document : DocumentValues,docLink : 
   )
 }
 
-export function ChatBox({document}:{document : DocumentValues}){
+type QueryObjects = {
+  user : string,
+}
+
+type AnswerObjects = {
+  brainly : string,
+}
+
+export function ChatBox({
+  document,
+  chatBoxRef,
+  queries,
+  setQueries,
+  answers,
+  setAnswers
+}:{
+  document: DocumentValues;
+  chatBoxRef: React.RefObject<HTMLDivElement>; 
+  queries: Array<QueryObjects>;
+  setQueries: React.Dispatch<React.SetStateAction<Array<QueryObjects>>>;
+  answers: Array<AnswerObjects>;
+  setAnswers: React.Dispatch<React.SetStateAction<Array<AnswerObjects>>>;
+}){
+
+  useEffect(()=>{
+    if (chatBoxRef.current) {
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+    }
+  },[queries,answers])
+
+  // Start Chatting Button Highlight
+  const [isHighlighted, setIsHighlighted] = useState(false);
+  const handleHighlight = () => {
+    setIsHighlighted(true);
+    setTimeout(() => {
+      setIsHighlighted(false);
+    }, 1000);
+    
+  };
+
+  // Query Functionalities
   const querySchema = z.object({
     user_query : z.string().min(1,"Kindly enter a valid query")
     });
@@ -180,13 +242,21 @@ export function ChatBox({document}:{document : DocumentValues}){
   const sendQuery : SubmitHandler<QueryValues> = async (data)=>{ 
     try{
       const {user_query} = data
+      const query : QueryObjects = {
+        user : user_query
+      }
+      setQueries([...queries,query])
+
       const userID = document.userID
       const key = document.key
       const res = await queryDoc(user_query,userID,key)
 
       if (res) {
-        toast.success('Query fetched successfully', { id: 'fetchquery' });
-        console.log(res.output.response)
+        const answer : AnswerObjects = {
+          brainly : res.output.response
+        }
+        setAnswers([...answers,answer])
+        queryForm.reset(); 
       }
     }
     catch (error : any) {
@@ -209,18 +279,89 @@ export function ChatBox({document}:{document : DocumentValues}){
   };
 
   return (
-    <div className={`flex justify-start rounded bg-indigo-900 w-full h-full text-white`}>
-      Chat Mode
-        <form className="flex justify-end items-end my-5 w-full" onSubmit={queryForm.handleSubmit(sendQuery,errorHandler)}>
-            <Input id="user_query" type="user_query" {...queryForm.register("user_query")} className="h-[50px] bg-white text-black" />
-            {!queryForm.formState.isSubmitting && (
-              <Button size={"xl"} startIcon={<FaArrowUp/>} type="submit"></Button>
-            )}
-            {queryForm.formState.isSubmitting && (
-              <Button size={"xl"} startIcon={<Loader2 className="animate-spin"/>} type="submit"></Button>
-            )}
-            
-        </form>
+    <div className={`flex flex-col h-full w-full rounded bg-indigo-900 w-full h-full text-white`}>
+      {queries.length === 0 && (
+        <div className="flex flex-col justify-center items-center h-full text-center">
+          <h1 className="text-4xl font-bold mb-4">Welcome to Chat Mode!</h1>
+          <p className="text-lg text-gray-300 mb-4">
+            Ask any question, and I'll provide the answers you need. Start your conversation now!
+          </p>
+          <button
+            className="bg-violet-500 hover:bg-violet-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-all"
+            onClick={() => handleHighlight()}
+          >
+            Start Chatting
+          </button>
+        </div>
+      )}
+      
+      {queries.length > 0 && (
+        <div ref={chatBoxRef} className="h-5/6 overflow-y-auto p-4">
+            <div className="h-full p-4">
+                {/* Chat messages */}
+                {queries.map((query, index) => (
+                  <div key={index} className="flex flex-col mb-4">
+                    {/* User messages */}
+                    <div className="flex justify-end items-center gap-2 mb-4">
+                      {/* User Chat Bubble */}
+                      <div className="max-w-[75%] bg-blue-200 text-black px-4 py-2 rounded-lg shadow text-right">
+                        {query.user}
+                      </div>
+
+                      {/* User Icon */}
+                      <FaUserCircle className="w-10 h-10 text-blue-500 text-2xl" />
+                    </div>
+
+
+                    {/* LLM response */}
+                    {!answers[index] && (
+                      <div className="flex justify-start items-center gap-2 mb-4">
+                        {/* LLM Loading Icon */}
+                        <ChatGptIcon 
+                          size={48} 
+                          color={"#9F7AEA"}
+                          className="animate-spin"
+                        />
+                      </div>
+                    )}
+
+                    {answers[index] && (
+                      <div className="flex justify-start items-center gap-2 mb-4">
+                        {/* LLM Icon */}
+                        <ChatGptIcon 
+                          size={48} 
+                          color={"#9F7AEA"} 
+                        />
+
+                        {/* LLM Chat Bubble */}
+                        <div className="self-start max-w-[75%] bg-violet-200 text-black px-4 py-2 rounded-lg shadow mt-2 text-left">
+                          <ReactMarkdown>{answers[index].brainly}</ReactMarkdown>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+            </div>
+        </div>
+      )}
+
+      <form className="flex justify-end items-end w-full p-8" onSubmit={queryForm.handleSubmit(sendQuery,errorHandler)}>
+          <Input 
+            id="user_query" 
+            type="user_query" 
+            {...queryForm.register("user_query")} 
+            className={`h-[50px] bg-white text-black transition-all outline-none ${
+              isHighlighted ? "ring-4 ring-blue-500" : ""
+            }`}
+          />
+
+          {!queryForm.formState.isSubmitting && (
+            <Button size={"xl"} startIcon={<FaArrowUp/>} type="submit"></Button>
+          )}
+          {queryForm.formState.isSubmitting && (
+            <Button disabled size={"xl"} startIcon={<Loader2 className="animate-spin"/>} type="submit"></Button>
+          )}
+      </form>
     </div>
   )
 }

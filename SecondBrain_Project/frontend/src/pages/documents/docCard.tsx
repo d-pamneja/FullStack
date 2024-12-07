@@ -142,6 +142,7 @@ export const DocumentWobbleCard = ({
                   <Button
                     variant={"destructive"}
                     startIcon={<Loader2 className="animate-spin"/>}
+                    disabled
                     onClick={()=>{
                       deleteFunction!(_id,docKey)
                     }}
@@ -149,10 +150,12 @@ export const DocumentWobbleCard = ({
                 )}
                 
                 <DialogClose asChild>
-                  <Button
-                    variant={"ghostDark"}
-                    text={"Cancel"}
-                  />
+                  {!deletionInProgress && (
+                    <Button
+                      variant={"ghostDark"}
+                      text={"Cancel"}
+                    />
+                  )}
                 </DialogClose>
                 </div>
             </DialogContent>

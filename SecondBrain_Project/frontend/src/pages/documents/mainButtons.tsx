@@ -197,7 +197,7 @@ export const ButtonDiv = ({className} : {className? : string} )=> {
                     <Button variant="primaryDoc" size="lg" text={"Add Document"} type="submit"></Button>
                   )}
                   {addDocumentForm.formState.isSubmitting && (
-                    <Button variant="primaryDoc" size="lg" startIcon={<Loader2 className="animate-spin"/>} text={"Uploading"} type="submit"></Button>
+                    <Button disabled variant="primaryDoc" size="lg" startIcon={<Loader2 className="animate-spin"/>} text={"Uploading"} type="submit"></Button>
                   )}
                 </DialogFooter>
               </form>
