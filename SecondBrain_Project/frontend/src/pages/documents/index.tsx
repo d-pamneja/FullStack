@@ -62,7 +62,12 @@ export function DocumentsDashboard() {
         <div className='flex flex-col w-full space-y-10'>
           <Header docsInfo={docsInfo}/>
           <div className='mx-10'>
-            <DocStack docsInfo={docsInfo}/>
+            {docsInfo && (<DocStack docsInfo={docsInfo}/>)}
+            {!docsInfo && (
+              <div>
+                Loading your documents....
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -89,7 +94,7 @@ export function Header({
   const [limitExceeded,setLimitExceeded] = useState(false)
   useEffect(()=>{
     const checkLimit = ()=>{
-      if(docsInfo.length >=5){
+      if(docsInfo.length >=3){
         setLimitExceeded(true)
       }
       else{
