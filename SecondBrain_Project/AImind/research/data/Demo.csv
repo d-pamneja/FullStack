@@ -1,0 +1,4 @@
+_id,link,type,title,description,tags[0],tags[1],userID,__v
+67559f6ee33e21842371fd7b,https://openai.com/index/introducing-chatgpt-pro/,text,GPT Pro - $200/month,,development,AI,67559e7229c6ffb06be7a883,0
+67559fe0e33ecc79f41ea880,https://www.youtube.com/watch?v=zKd_kxcxGbo,video,The rise of mediocrity ,,development,motivation,67559e7229c6ffb06be7a883,0
+6755a18be33e21842371fd91,https://medium.com/gopenai/unlocking-domain-expertise-with-llms-the-power-of-retrieval-augmented-generation-rag-2d8804116a66,text,RAG - Intro,,AI,development,67559e7229c6ffb06be7a883,0
