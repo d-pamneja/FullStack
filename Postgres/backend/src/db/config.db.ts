@@ -1,6 +1,6 @@
 import { Client } from "pg";
-import { createUserTable,createToDoTable } from "./controllers.db";
-import { USER_TABLE_QUERY,TODO_TABLE_QUERY } from "./queries.db";
+import { createUserTable,createToDoTable, createAddressTable } from "./controllers.db";
+import { USER_TABLE_QUERY,TODO_TABLE_QUERY, USER_ADDRESS_TABLE_QUERY } from "./queries.db";
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -19,6 +19,7 @@ export async function dbConfig(){
         connect(pgClient);
         createUserTable(USER_TABLE_QUERY);
         createToDoTable(TODO_TABLE_QUERY);
+        createAddressTable(USER_ADDRESS_TABLE_QUERY);
     } catch (error) {
         console.log("Could not configure and connect to DB : ",error)
     }

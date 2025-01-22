@@ -11,7 +11,7 @@ app.use('/',appRouter)
 
 
 app.listen(3001,()=>{
-    console.log("App set and connected to Posgress DB.")
+    console.log("App listening at port 3001...")
 })
 
 export default app;

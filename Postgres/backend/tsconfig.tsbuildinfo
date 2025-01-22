@@ -1,1 +1,1 @@
-{"root":["./src/index.ts","./src/api/controllers/user.controllers.ts","./src/api/routes/index.routes.ts","./src/api/routes/user.routes.ts","./src/db/config.db.ts","./src/db/controllers.db.ts","./src/db/queries.db.ts"],"version":"5.7.3"}
+{"root":["./src/index.ts","./src/api/controllers/todos.controllers.ts","./src/api/controllers/user.controllers.ts","./src/api/routes/index.routes.ts","./src/api/routes/todo.routes.ts","./src/api/routes/user.routes.ts","./src/db/config.db.ts","./src/db/controllers.db.ts","./src/db/queries.db.ts"],"version":"5.7.3"}

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { userRouter } from "./user.routes";
+import { todoRouter } from "./todo.routes";
 
 export const appRouter = Router();
 
@@ -8,3 +9,4 @@ appRouter.get('/', (req, res) => {
 });
 
 appRouter.use('/user',userRouter)
+appRouter.use('/todo',todoRouter)
